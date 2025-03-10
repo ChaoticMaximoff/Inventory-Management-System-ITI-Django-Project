@@ -1,0 +1,19 @@
+<div class="container mt-5 mb-5">
+    <div class="d-flex align-items-center justify-content-center mt-5">
+        <h2><b>Login</b></h2>
+    </div>
+    <form method="POST" enctype="multipart/form-data" class="django-form w-50 m-auto" action="{% url 'login' %}">
+    
+        {% csrf_token %}
+        
+        {{ form }}
+        <button class="btn btn-custom" style='color:white; background-color: #c3829e;' type="submit">Save</button>
+    </form>
+</div>
+
+{% if user.is_authenticated %}
+<form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">logout</button>
+</form>
+{% endif %}
