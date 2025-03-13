@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ValidationError
 from inventory.models import Product
 from django.conf import settings
 
@@ -34,7 +35,7 @@ class ShipmentItem(models.Model):
     shipment = models.ForeignKey(
         Shipment, on_delete=models.CASCADE, related_name="items"
     )
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField()
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -46,7 +47,7 @@ class ShipmentItem(models.Model):
 
     def save(self, *args, **kwargs):
         if self.shipment.confirmed:
-            raise ValueError("Cannot modify a confirmed shipment")
+            raise ValidationError("Cannot modify a confirmed shipment")
         super().save(*args, **kwargs)
 
     def __str__(self):
