@@ -7,6 +7,12 @@ class ShipmentForm(forms.ModelForm):
         model = Shipment
         fields = ["factory", "receive_date"]
 
+    def clean_quantity(self):
+        quantity = self.cleaned_data.get("quantity")
+        if quantity <= 0:
+            raise forms.ValidationError("Quantity must be greater than zero.")
+        return quantity
+
 
 class ShipmentItemForm(forms.ModelForm):
     class Meta:
