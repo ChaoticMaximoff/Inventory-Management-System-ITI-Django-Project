@@ -3,8 +3,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.views import View
 from django.views.generic import ListView, DetailView
-from shipments.models import Shipment, ShipmentItem
+from shipments.models import Shipment
 from shipments.forms import ShipmentForm, ShipmentItemForm
+from django.core.paginator import Paginator
 
 
 class RoleRequiredMixin(UserPassesTestMixin):
@@ -46,6 +47,21 @@ class ShipmentDetailView(LoginRequiredMixin, DetailView):
     model = Shipment
     template_name = "shipments/shipment_detail.html"
     context_object_name = "shipment"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shipment = self.get_object()
+
+        # Paginate shipment items
+        items_per_page = 2
+        paginator = Paginator(shipment.items.all(), items_per_page)
+        page_number = self.request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
+        # Add pagination objects to the context
+        context["page_obj"] = page_obj
+        context["is_paginated"] = page_obj.has_other_pages()
+        return context
 
 
 class ShipmentCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
