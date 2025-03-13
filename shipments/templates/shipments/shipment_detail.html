@@ -21,18 +21,6 @@
             <em>Unknown</em>
         {% endif %}
     </p>
-    {% if not shipment.confirmed and user.role == "employee" %}
-        <a href="{% url 'shipment_item_create' shipment.id %}"
-           class="btn btn-success">Add Item</a>
-    {% endif %}
-    {% if not shipment.confirmed and user.role == "manager" %}
-        <form method="post"
-              action="{% url 'shipment_confirm' shipment.id %}"
-              class="d-inline">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-warning">Confirm Shipment</button>
-        </form>
-    {% endif %}
     <h3 class="mt-4">Items</h3>
     <table class="table">
         <thead>
@@ -93,7 +81,7 @@
             <a href="{% url 'shipment_add_item' shipment.id %}"
                class="btn btn-primary">➕ Add Item</a>
         {% endif %}
-        {% if request.user.is_superuser or request.user.role == "MANAGER" %}
+        {% if request.user.is_superuser or request.user.role == "manager" %}
             {% if not shipment.confirmed %}
                 <form method="post"
                       action="{% url 'shipment_confirm' shipment.id %}"
