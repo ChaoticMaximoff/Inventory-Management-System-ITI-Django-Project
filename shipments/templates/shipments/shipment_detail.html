@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}
+    Shipment Details
+{% endblock title %}
+{% block content %}
+    <h2>Shipment Details</h2>
+    <p>
+        <strong>Factory:</strong> {{ shipment.factory.name }}
+    </p>
+    <p>
+        <strong>Receive Date:</strong> {{ shipment.receive_date }}
+    </p>
+    <p>
+        <strong>Confirmed:</strong> {{ shipment.confirmed|yesno:"✅,❌" }}
+    </p>
+    <p>
+        <strong>Created By:</strong>
+        {% if shipment.created_by %}
+            {{ shipment.created_by.username }}
+        {% else %}
+            <em>Unknown</em>
+        {% endif %}
+    </p>
+    {% if not shipment.confirmed and user.role == "employee" %}
+        <a href="{% url 'shipment_item_create' shipment.id %}"
+           class="btn btn-success">Add Item</a>
+    {% endif %}
+    {% if not shipment.confirmed and user.role == "manager" %}
+        <form method="post"
+              action="{% url 'shipment_confirm' shipment.id %}"
+              class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning">Confirm Shipment</button>
+        </form>
+    {% endif %}
+    <h3 class="mt-4">Items</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Added By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in shipment.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>
+                        {% if item.created_by %}
+                            {{ item.created_by.username }}
+                        {% else %}
+                            <em>Unknown</em>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No items added yet.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="shipment-actions mt-4">
+        {% if not shipment.confirmed %}
+            <a href="{% url 'shipment_add_item' shipment.id %}"
+               class="btn btn-primary">➕ Add Item</a>
+        {% endif %}
+        {% if request.user.is_superuser or request.user.role == "MANAGER" %}
+            {% if not shipment.confirmed %}
+                <form method="post"
+                      action="{% url 'shipment_confirm' shipment.id %}"
+                      class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">✅ Confirm Shipment</button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock content %}
