@@ -20,6 +20,8 @@
 
         {{ form.username }} {{ form.email }} {{ form.password1 }}
         {{form.password2 }} {{ form.role }}
+        {{ form.username }} {{ form.email }} {{ form.password1 }}
+        {{form.password2 }} {{ form.role }}
 
         <button
           type="submit"
@@ -28,6 +30,12 @@
           Register
         </button>
 
+        <p class="text-center mt-3">
+          Already have an account?
+          <a style="color: var(--color-blue)" href="{% url 'accounts:login' %}"
+            >Login</a
+          >
+        </p>
         <p class="text-center mt-3">
           Already have an account?
           <a style="color: var(--color-blue)" href="{% url 'accounts:login' %}"
