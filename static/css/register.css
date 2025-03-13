@@ -50,11 +50,11 @@ img {
   border-radius: 20px !important;
   min-height: 600px;
 }
-.btn:hover {
+.reg-btn:hover {
   background-color: var(--color-purple) !important;
 }
 @media (max-width: 1024px) {
-  body {
+  .custom-body {
     min-height: 100vh;
   }
 }
