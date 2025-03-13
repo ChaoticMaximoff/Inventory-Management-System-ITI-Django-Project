@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser
+from .models import User
 
 class LoginForm(forms.Form):
     email = forms.EmailField(
@@ -30,7 +30,7 @@ class LoginForm(forms.Form):
         password = cleaned_data.get('password')
 
         if email and password:
-            user = CustomUser.objects.filter(email=email).first()
+            user = User.objects.filter(email=email).first()
             if not user:
                 raise forms.ValidationError("User with this email does not exist.")
             if not user.check_password(password):
@@ -39,7 +39,7 @@ class LoginForm(forms.Form):
 
 class RegisterForm(UserCreationForm):
     role = forms.ChoiceField(
-        choices=CustomUser.ROLE_CHOICES,
+        choices=User.ROLE_CHOICES,
         label='Role',
         widget=forms.Select(attrs={'class': 'form-control rounded-pill py-3 px-5', 'id': 'role', 'required': True})
     )
@@ -61,18 +61,18 @@ class RegisterForm(UserCreationForm):
     )
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = ['username', 'email', 'password1', 'password2', 'role']
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if CustomUser.objects.filter(email=email).exists():
+        if User.objects.filter(email=email).exists():
             raise forms.ValidationError("A user with this email already exists.")
         return email
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
-        if CustomUser.objects.filter(username=username).exists():
+        if User.objects.filter(username=username).exists():
             raise forms.ValidationError("A user with this username already exists.")
         return username
 
