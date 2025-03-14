@@ -1,3 +1,4 @@
 from django.contrib import admin
+from factories.models import Factory
 
-# Register your models here.
+admin.site.register(Factory)
