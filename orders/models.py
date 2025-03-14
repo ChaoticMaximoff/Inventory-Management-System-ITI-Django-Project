@@ -1,5 +1,6 @@
 from django.db import models
 from inventory.models import Product
+from django.conf import settings
 
 
 class Supermarket(models.Model):
@@ -23,6 +24,14 @@ class Order(models.Model):
     supermarket = models.ForeignKey(Supermarket, on_delete=models.RESTRICT, related_name="orders")
     created_at = models.DateField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="shipments",
+    )
+
 
     def str(self):
         return f"Order to {self.supermarket.name} - {self.status}"
@@ -32,6 +41,13 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="shipment_items",
+    )
 
     def save(self, *args, **kwargs):
         if self.order.status == Order.CONFIRMED:  # Prevent modifications to confirmed orders
@@ -39,3 +55,6 @@ class OrderItem(models.Model):
         if self.quantity > self.product.quantity:
             raise ValueError("Not enough stock available")
         super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name} (Order: {self.order.id})"
