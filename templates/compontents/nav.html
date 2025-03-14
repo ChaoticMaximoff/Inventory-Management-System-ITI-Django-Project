@@ -1,0 +1,121 @@
+{% load static %}
+<style>
+  .navbar-custom {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+  }
+  .navbar-brand {
+    font-weight: bold;
+    color: #000;
+  }
+  .navbar-brand:hover {
+    color: var(--color-purple);
+  }
+  .input-group {
+    border-radius: 20px;
+  }
+  .input-group-text {
+    border: none;
+    background-color: #f3f3f3;
+    border-color: #ced4da;
+    color: #8c8c8c;
+    border-radius: 10px;
+  }
+  .form-control {
+    border-left: none;
+    border-color: #ced4da;
+    border: none;
+    background-color: #f3f3f3;
+    border-radius: 10px;
+  }
+  .input-group .form-control:focus {
+    border-color: #ced4da;
+    box-shadow: none;
+    background-color: #f3f3f3;
+  }
+  .form-control::placeholder {
+    color: #8c8c8c;
+    font-size: 17px;
+  }
+  .dropdown-toggle::after {
+    display: none;
+  }
+  .dropdown {
+    position: relative;
+  }
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0;
+  }
+  .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  .dropdown-toggle {
+    text-decoration: none;
+  }
+  .profile:hover {
+    background-color: #f3f3f3 !important;
+  }
+  .bell-btn:hover {
+    background-color: #f3f3f3 !important;
+  }
+</style>
+<nav class="navbar navbar-expand-lg navbar-custom">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Dashboard</a>
+    <div class="d-flex mx-auto" style="max-width: 300px">
+      <div class="input-group">
+        <button class="input-group-text" id="basic-addon1">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search"
+          aria-label="Search"
+          aria-describedby="basic-addon1" />
+      </div>
+    </div>
+    <div class="d-flex align-items-center">
+      <button class="btn bell-btn btn-link text-dark me-3">
+        <i style="font-size: 25px" class="fa-regular fa-bell"></i>
+      </button>
+      <div class="dropdown">
+        <a
+          class="profile dropdown-toggle text-dark btn"
+          href="#"
+          role="button"
+          id="userDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          aria-label="User menu for Belal, Manager">
+          <span class="d-flex align-items-center gap-2 text-start">
+            <img
+              src="{% static 'images/admin.jpg' %}"
+              alt="User"
+              class="rounded-circle me-2"
+              style="width: 30px; height: 30px" />
+            <span style="font-size: 16px">
+              Belal<br />
+              <small class="text-muted">Manager</small>
+            </span>
+            <i class="fa-solid fa-caret-down"></i>
+          </span>
+        </a>
+
+        <ul
+          class="dropdown-menu dropdown-menu-end"
+          aria-labelledby="userDropdown">
+          <li><a class="dropdown-item" href="#">Profile</a></li>
+          <li><a class="dropdown-item" href="#">Settings</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item" href="#">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
