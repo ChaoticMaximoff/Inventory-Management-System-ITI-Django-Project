@@ -1,19 +1,58 @@
-<div class="container mt-5 mb-5">
-    <div class="d-flex align-items-center justify-content-center mt-5">
-        <h2><b>Login</b></h2>
+{% extends 'base.html' %} {% block content %} {% load static %}
+<title>Login</title>
+<link rel="stylesheet" href="{% static 'css/login.css' %}" />
+<div
+  class="d-flex d-xl-block align-items-center justify-content-center custom-body">
+  <div class="row main-wrapper align-items-center shadow">
+    <div class="col-sm-12 col-lg-12 col-xl-6 text-center p-0">
+      <img
+        class="img-fluid d-none d-xl-block"
+        style="background: linear-gradient(180deg, #9747ff, #584bdd)"
+        src="{% static 'images/Registerimg.svg' %}"
+        alt="Barcode Image" />
     </div>
-    <form method="POST" enctype="multipart/form-data" class="django-form w-50 m-auto" action="{% url 'login' %}">
-    
+    <div class="col-sm-12 col-lg-12 col-xl-6">
+      <form method="POST" class="row g-4 justify-content-center mt-4">
         {% csrf_token %}
-        
-        {{ form }}
-        <button class="btn btn-custom" style='color:white; background-color: #c3829e;' type="submit">Save</button>
-    </form>
-</div>
+        <h3 style="padding-left: 20%">
+          <span class="fw-bolder">Hello Again!</span><br />
+          <span style="font-size: 20px">Welcome Back</span>
+        </h3>
+        {{form.email}} {{form.password}}
+        <button
+          type="submit"
+          class="btn btn-primary rounded-pill fw-bold py-3 px-5"
+          style="width: 60%; background-color: var(--color-blue)">
+          Login
+        </button>
 
-{% if user.is_authenticated %}
-<form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit">logout</button>
-</form>
-{% endif %}
+        <p class="text-center mt-3">
+          Didn't have an account?
+          <a
+            style="color: var(--color-blue)"
+            href="{% url 'accounts:register' %}"
+            >Register</a
+          >
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+{% if login_success %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    Swal.fire({
+      title: "Login Successful",
+      text: "You have successfully logged in!",
+      icon: "success",
+      toast: true,
+      position: "top",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    }).then(() => {
+      window.location.href = "{% url 'accounts:index' %}";
+    });
+  });
+</script>
+{% endif %} {% endblock content %}
