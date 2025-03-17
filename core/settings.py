@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'inventory',
     'orders',
     'shipments',
+    'sweetify'
 ]
 
 MIDDLEWARE = [

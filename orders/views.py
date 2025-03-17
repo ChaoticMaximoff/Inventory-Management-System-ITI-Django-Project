@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_list_or_404, redirect
+from django.shortcuts import render, get_list_or_404, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView
 from .models import Order, Supermarket
-from django.contrib.auth.mixins import loginRequiredMixin, UserPassesTestMixin #for permissions
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin #for permissions
 from django.views import View
 from django.contrib import messages
+from .forms import OrdersForm
 
 #custom mixin for the requireed rules
 class RoleRequiredMixin(UserPassesTestMixin):
@@ -18,7 +19,7 @@ class RoleRequiredMixin(UserPassesTestMixin):
             return True
     def handle_no_permission(self):
         messages.error(self.request, "You do not have the permission to acces this page.")
-        return redirect("page that lists the orders")
+        return redirect("../../order_list.html")
 
 class OrderListView(ListView):
     model = Order
@@ -38,6 +39,22 @@ class OrderDetailsView(DetailView):
 
     # def get_context_data(self, **kwargs):
     #     return super().get_context_data(**kwargs)
+
+class OrdersCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
+    requied_roles=["EMPLOYEE"] #any emplyee can create an order
+    def get(self, request):
+        form = OrdersForm()
+        return render(request, "order_form.html", {"form":form})
+
+    def post(self, request):
+        form = OrdersForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.created_by = request.user
+            order.save()
+            return redirect("order_list.html")
+        return render(request, "order_form.html", {"form":form})
+            
 
 class SupermarketOrderListView(ListView):
     model = Order

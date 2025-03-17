@@ -24,12 +24,12 @@ class Order(models.Model):
     supermarket = models.ForeignKey(Supermarket, on_delete=models.RESTRICT, related_name="orders")
     created_at = models.DateField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
-    created_by = models.ForeignKey(
+    created_by_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="shipments",
+        related_name="orders",
     )
 
 
@@ -41,12 +41,12 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
-    created_by = models.ForeignKey(
+    created_by_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="shipment_items",
+        related_name="order_itenms",
     )
 
     def save(self, *args, **kwargs):

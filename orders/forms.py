@@ -10,5 +10,5 @@ class SupermarketForm(forms.ModelForm):
 class OrdersForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ["STATUS_CHOICES, supermarket, "]
+        fields = ["supermarket"]
     
