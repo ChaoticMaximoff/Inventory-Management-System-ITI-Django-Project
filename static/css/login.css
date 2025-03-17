@@ -34,12 +34,6 @@ img {
 .log-btn:hover {
   background-color: var(--color-purple) !important;
 }
-.profile:hover {
-  background-color: #f3f3f3 !important;
-}
-.bell-btn:hover {
-  background-color: #f3f3f3 !important;
-}
 @media (max-width: 1024px) {
   .custom-body {
     min-height: 100vh;
