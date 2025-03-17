@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 from .forms import LoginForm, RegisterForm
@@ -40,7 +41,12 @@ class LoginView(generic.View):
         return render(request, self.template_name, {'form': form})
     
         
-class RegisterView(generic.CreateView):
+class RegisterView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
+    def test_func(self):
+        return self.request.user.role == "manager"
+    
+    login_url = ""
+    redirect_field_name = "redirect_to"
     form_class = RegisterForm
     template_name = 'registration/register.html'
     success_url = reverse_lazy('accounts:index')
