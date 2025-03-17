@@ -8,7 +8,7 @@ class Supermarket(models.Model):
     location = models.CharField(max_length=255, blank=True, null=True)
     contact_number = models.CharField(max_length=20, blank=True, null=True)
 
-    def str(self):
+    def __str__(self):
         return self.name
     
 
@@ -36,6 +36,10 @@ class Order(models.Model):
     def str(self):
         return f"Order to {self.supermarket.name} - {self.status}"
     
+    def __str__(self):
+        return str(self.id)
+    
+    
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
@@ -46,7 +50,7 @@ class OrderItem(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="order_itenms",
+        related_name="order_items",
     )
 
     def save(self, *args, **kwargs):

@@ -1,10 +1,11 @@
 from django import forms
-from orders.models import Order, Supermarket
+from orders.models import Order, Supermarket, OrderItem
 
-class SupermarketForm(forms.ModelForm):
-    class Meta:
-        model = Supermarket
-        fields = "__all__"
+# class SupermarketForm(forms.ModelForm):
+#     class Meta:
+#         model = Supermarket
+#         fields = "__all__"
+
 
 
 class OrdersForm(forms.ModelForm):
@@ -12,3 +13,8 @@ class OrdersForm(forms.ModelForm):
         model = Order
         fields = ["supermarket"]
     
+
+class OrderItemForm(forms.ModelForm):
+    class Meta:
+        model = OrderItem
+        fields =["order", "product", "quantity"]
