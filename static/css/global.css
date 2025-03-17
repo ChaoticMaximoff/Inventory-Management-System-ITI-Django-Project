@@ -2,11 +2,7 @@
 :root {
   --primary-color: #584bdd;
   --secondary-color: #9747ff;
-<<<<<<< HEAD
   --sidebar-bg: #040128;
-=======
-  --sidebar-bg: #2c3e50;
->>>>>>> c2c832f07d235d4bf59e24193a030c29e9ef454c
   --sidebar-text: #ecf0f1;
   --card-bg: #ffffff;
   --text-primary: #3b3b3b;
@@ -41,7 +37,6 @@ body {
   color: var(--text-primary);
   background-color: #f1f3f5;
   line-height: 1.6;
-<<<<<<< HEAD
 }
 
 /* Sidebar Styling */
@@ -160,7 +155,6 @@ body {
 }
 .bell-btn:hover {
   background-color: #f3f3f3 !important;
-=======
   min-height: 100vh;
   min-height: -webkit-fill-available;
 }
@@ -184,5 +178,4 @@ a {
 
 a:hover {
   text-decoration: underline;
->>>>>>> c2c832f07d235d4bf59e24193a030c29e9ef454c
 }
