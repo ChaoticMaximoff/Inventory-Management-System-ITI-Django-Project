@@ -28,6 +28,7 @@
                 <th>Product</th>
                 <th>Quantity</th>
                 <th>Added By</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -41,6 +42,12 @@
                         {% else %}
                             <em>Unknown</em>
                         {% endif %}
+                    </td>
+                    <td>
+                        <form action="{% url 'shipment_delete_item' item.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
                     </td>
                 </tr>
             {% empty %}
@@ -80,6 +87,8 @@
         {% if not shipment.confirmed %}
             <a href="{% url 'shipment_add_item' shipment.id %}"
                class="btn btn-primary">➕ Add Item</a>
+            <a href="{% url 'shipment_edit' shipment.id %}"
+               class="btn btn-primary">Update Shipment</a>
         {% endif %}
         {% if request.user.is_superuser or request.user.role == "manager" %}
             {% if not shipment.confirmed %}
