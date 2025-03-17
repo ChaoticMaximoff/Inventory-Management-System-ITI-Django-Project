@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}
+    Shipment Details
+{% endblock title %}
+{% block content %}
+    <h2>Shipment Details</h2>
+    <p>
+        <strong>Factory:</strong> {{ shipment.factory.name }}
+    </p>
+    <p>
+        <strong>Receive Date:</strong> {{ shipment.receive_date }}
+    </p>
+    <p>
+        <strong>Confirmed:</strong> {{ shipment.confirmed|yesno:"✅,❌" }}
+    </p>
+    <p>
+        <strong>Created By:</strong>
+        {% if shipment.created_by %}
+            {{ shipment.created_by.username }}
+        {% else %}
+            <em>Unknown</em>
+        {% endif %}
+    </p>
+    <h3 class="mt-4">Items</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Added By</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in page_obj %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>
+                        {% if item.created_by %}
+                            {{ item.created_by.username }}
+                        {% else %}
+                            <em>Unknown</em>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="{% url 'shipment_delete_item' item.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No items added yet.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- Pagination Controls -->
+    {% if is_paginated %}
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">⏮ First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">⬅ Previous</a>
+                    </li>
+                {% endif %}
+                <li class="page-item active">
+                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next ➡</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last ⏭</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+    <div class="shipment-actions mt-4">
+        {% if not shipment.confirmed %}
+            <a href="{% url 'shipment_add_item' shipment.id %}"
+               class="btn btn-primary">➕ Add Item</a>
+            <a href="{% url 'shipment_edit' shipment.id %}"
+               class="btn btn-primary">Update Shipment</a>
+        {% endif %}
+        {% if request.user.is_superuser or request.user.role == "manager" %}
+            {% if not shipment.confirmed %}
+                <form method="post"
+                      action="{% url 'shipment_confirm' shipment.id %}"
+                      class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">✅ Confirm Shipment</button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock content %}

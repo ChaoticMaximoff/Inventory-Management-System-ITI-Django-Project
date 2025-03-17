@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}
+    Add Shipment Item
+{% endblock title %}
+{% block content %}
+    <h2>Add Item to Shipment</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Add Item</button>
+    </form>
+    <a href="{% url 'shipment_detail' shipment.id %}"
+       class="btn btn-secondary mt-2">Back</a>
+{% endblock content %}
