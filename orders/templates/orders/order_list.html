@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container p-6">
     <p class="text-2xl font-semibold p-0 m-0">All Orders</p>
-    <p class="fw-light p-0">Oreders detail information</p>
+    <p class="fw-light p-0">Orders detail information</p>
     
     <div class="shadow-md border rounded p-4">
         <input placeholder="search your orders" class="border rounded p-2"/>
@@ -16,7 +16,6 @@
         <table class=" w-100">
             <thead>
                 <tr class="bg-light rounded">
-                    <th class="border-end p-2 text-center"> <input type="checkbox" class=" link-light "/></th>
                     <th class="border-end p-2 text-left">Supermarket Name</th>
                     <th class="border-end p-2 text-left">Created At</th>
                     <th class="border-end p-2 text-left">Status</th>
@@ -26,10 +25,10 @@
             <tbody>
                 {% for order in orders %}
                 <tr class="border-bottom">
-                    <td class="p-2 border">{{ order.supermarket_name }}</td>
+                    <td class="p-2 border">{{ order.supermarket }} {{order.id}}</td>
                     <td class="p-2 border">{{ order.created_at }}</td>
                     <td class="p-2 border">{{ order.status }}</td>
-                    <td class="p-2 border">{{ order.created_by.username }}</td>
+                    <td class="p-2 border">{{ order.created_by_user }}</td>
                 </tr>
                 {% empty %}
                 <tr>

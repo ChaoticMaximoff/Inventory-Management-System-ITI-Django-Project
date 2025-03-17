@@ -4,26 +4,28 @@ from .models import Order, Supermarket
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin #for permissions
 from django.views import View
 from django.contrib import messages
-from .forms import OrdersForm
+from .forms import OrdersForm, OrderItemForm
+from django.core.paginator import Paginator
 
-#custom mixin for the requireed rules
+
+#custom mixin for the required rules
 class RoleRequiredMixin(UserPassesTestMixin):
-    requied_roles = []
+    required_roles = []
     def test_func(self): #checking if the user has the required roles
         user = self.request.user
-        if not user.is_authentcated:
+        if not user.is_authenticated:
             return False
         if user.is_superuser:
             return True
-        if 'EMPOLYEE' in self.requied_roles and user.role.upper():
+        if 'EMPLOYEE' in self.required_roles and user.role.upper() == 'MANAGER':
             return True
     def handle_no_permission(self):
-        messages.error(self.request, "You do not have the permission to acces this page.")
-        return redirect("../../order_list.html")
+        messages.error(self.request, "You do not have the permission to access this page.")
+        return redirect("orders")
 
 class OrderListView(ListView):
     model = Order
-    template_name= 'order_list.html'
+    template_name= 'orders/order_list.html'
     context_object_name ='orders'
     #ordering = ["-created_at"]
     #paginate_by = 2
@@ -34,27 +36,65 @@ class OrderListView(ListView):
  
 class OrderDetailsView(DetailView):
     model = Order
-    template_name = 'order_details.html'
-    context_object_name = 'orders'
+    template_name = 'orders/order_details.html'
+    context_object_name = 'order_items'
 
-    # def get_context_data(self, **kwargs):
-    #     return super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
 
-class OrdersCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
-    requied_roles=["EMPLOYEE"] #any emplyee can create an order
+class OrdersCreateView(LoginRequiredMixin, View):
+    #required_roles=["EMPLOYEE"] #any employee can create an order
     def get(self, request):
         form = OrdersForm()
-        return render(request, "order_form.html", {"form":form})
+        return render(request, "orders/order_form.html", {"form":form})
 
     def post(self, request):
         form = OrdersForm(request.POST)
         if form.is_valid():
             order = form.save(commit=False)
-            order.created_by = request.user
+            order.created_by_user = request.user
             order.save()
-            return redirect("order_list.html")
-        return render(request, "order_form.html", {"form":form})
+            return redirect("orders")
+        return render(request, "orders/order_form.html", {"form":form})
+
+class OrderCreateItemView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        order = get_object_or_404(Order, id=pk)
+        form = OrderItemForm()
+        return render(request, "orders/order_item_form.html", {"form":form, "order":order})
+    
+    def post(self, request, pk):
+        order = get_object_or_404(Order, id=pk)
+        form = (request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.created_by_user = request.user
+            item.save()
+            return redirect("order-items", pk=Order.id)
+        return render(request, "order/order_item_form.html", {"form":form, "order":order})
+    
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
+    
             
+class OrderConfirmView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        order = get_object_or_404(Order, id=pk, confirmed=False)
+
+        if not order.items.exists():
+            messages.error(request, "Cannot confirm an empty shipment.")
+            return redirect("shipment_detail", pk=order.id)
+
+        for item in order.items.all():
+            product = item.product
+            product.quantity -= item.quantity
+            product.save()
+
+        order.confirmed = True
+        order.save()
+        messages.success(request, "Shipment confirmed! Stock updated.")
+        return redirect("shipment_detail", pk=order.id)
+
 
 class SupermarketOrderListView(ListView):
     model = Order
