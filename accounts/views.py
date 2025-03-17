@@ -65,3 +65,6 @@ class RegisterView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
 
 def index(request):        
     return render(request, 'index.html')
+
+def dashboard(request):
+    return render(request, 'Dashboard.html')
