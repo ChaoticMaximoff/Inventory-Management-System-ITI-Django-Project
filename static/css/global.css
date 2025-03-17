@@ -2,28 +2,40 @@
 :root {
   --primary-color: #584bdd;
   --secondary-color: #9747ff;
-  --tertiary-color: #3b3b3b;
-  --sidebar-text: #ecf0f1;
   --sidebar-bg: #040128;
+  --sidebar-text: #ecf0f1;
   --card-bg: #ffffff;
-  --text-primary: #212529;
+  --text-primary: #3b3b3b;
   --text-muted: #6c757d;
   --border-color: #dee2e6;
   --hover-bg: #f8f9fa;
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --font-family: "Montserrat", "Roboto", sans-serif;
 }
 
 /* Reset and Base Styles */
-* {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+article,
+aside,
+footer,
+header,
+main,
+nav,
+section {
+  display: block;
+}
+
 body {
-  font-family: "Roboto", sans-serif;
-  background-color: #f1f3f5;
+  font-family: var(--font-family);
   color: var(--text-primary);
+  background-color: #f1f3f5;
   line-height: 1.6;
 }
 
