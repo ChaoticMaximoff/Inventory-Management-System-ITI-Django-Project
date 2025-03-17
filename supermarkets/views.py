@@ -7,6 +7,7 @@ from django.views.generic import (
     UpdateView,
 )
 from django.urls import reverse_lazy
+from supermarkets.forms import SupermarketForm
 from supermarkets.models import Supermarket
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -26,14 +27,14 @@ class SupermarketDetailView(LoginRequiredMixin, DetailView):
 
 class SupermarketCreateView(LoginRequiredMixin, CreateView):
     model = Supermarket
-    fields = ["name", "location"]
+    form_class = SupermarketForm
     template_name = "supermarkets/supermarket_form.html"
     success_url = reverse_lazy("supermarket_list")
 
 
 class SupermarketUpdateView(LoginRequiredMixin, UpdateView):
     model = Supermarket
-    fields = ["name", "location"]
+    form_class = SupermarketForm
     template_name = "supermarkets/supermarket_form.html"
     success_url = reverse_lazy("supermarket_list")
 
