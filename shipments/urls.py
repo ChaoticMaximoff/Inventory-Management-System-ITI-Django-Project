@@ -5,6 +5,9 @@ from shipments.views import (
     ShipmentCreateView,
     ShipmentItemCreateView,
     ShipmentConfirmView,
+    ShipmentUpdateView,  
+    ShipmentDeleteView, 
+    ShipmentItemDeleteView
 )
 
 urlpatterns = [
@@ -17,8 +20,15 @@ urlpatterns = [
         name="shipment_add_item",
     ),
     path(
+        "<int:pk>/delete-item",
+        ShipmentItemDeleteView.as_view(),
+        name="shipment_delete_item",
+    ),
+    path(
         "<int:shipment_id>/confirm/",
         ShipmentConfirmView.as_view(),
         name="shipment_confirm",
     ),
+    path("<int:pk>/edit/", ShipmentUpdateView.as_view(), name="shipment_edit"),
+    path("<int:pk>/delete/", ShipmentDeleteView.as_view(), name="shipment_delete"),
 ]

@@ -31,6 +31,8 @@
                     <td>
                         <a href="{% url 'shipment_detail' shipment.id %}"
                            class="btn btn-info btn-sm">View</a>
+                        <a href="{% url 'shipment_delete' shipment.id %}"
+                           class="btn btn-danger btn-sm">Delete</a>
                     </td>
                 </tr>
             {% empty %}
