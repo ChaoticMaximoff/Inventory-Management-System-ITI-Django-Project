@@ -1,5 +1,5 @@
 {% extends 'base.html' %} {% block content %} {% load static %}
-<title>Sign up</title>
+<title>Register a New User</title>
 <link rel="stylesheet" href="{% static 'css/register.css' %}" />
 <div
   class="d-flex d-xl-block align-items-center justify-content-center custom-body">
@@ -15,7 +15,7 @@
       <form method="POST" class="row g-4 justify-content-center mt-4">
         {% csrf_token %}
         <h3 style="padding-left: 20%">
-          <span class="fw-bolder">Hello!</span><br />Sign up to get started.
+          <span class="fw-bolder">Hello!</span><br />Register a new user.
         </h3>
 
         {{ form.username }} {{ form.email }} {{ form.password1 }}
@@ -27,13 +27,6 @@
           style="width: 60%; background-color: var(--color-blue)">
           Register
         </button>
-
-        <p class="text-center mt-3">
-          Already have an account?
-          <a style="color: var(--color-blue)" href="{% url 'accounts:login' %}"
-            >Login</a
-          >
-        </p>
 
         {% if form.non_field_errors %}
         <div class="alert alert-danger mt-3">
