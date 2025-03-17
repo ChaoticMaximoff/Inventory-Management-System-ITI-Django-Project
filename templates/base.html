@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -15,15 +16,17 @@
       integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="{% static 'css/global.css' %}" />
     <meta charset="UTF-8" />
 
     {% block extra_head %} {% endblock %}
   </head>
   <body>
-    <header>
-      <!-- add navbar here -->
-    </header>
-    <main>{% block content %} {% endblock %}</main>
+    <header class="header">{% include "compontents/nav.html" %}</header>
+    {% include "compontents/aside.html" %}
+    <main class="main-content">{% block content %} {% endblock %}</main>
     <footer>{% block footer %} {% endblock %}</footer>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {% load sweetify %} {% sweetify %}
