@@ -125,7 +125,7 @@ USE_I18N = True
 USE_TZ = True
 
 MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR / "media")
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -145,13 +145,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_URL = "/"
+AUTH_USER_MODEL = "accounts.User"
 
 AUTHENTICATION_BACKENDS = [
     "accounts.backends.EmailBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
-
-AUTH_USER_MODEL = "accounts.User"
-
-
 SWEETIFY_SWEETALERT_LIBRARY = "sweetalert2"
