@@ -38,7 +38,7 @@ class ShipmentListView(LoginRequiredMixin, ListView):
     template_name = "shipments/shipment_list.html"
     context_object_name = "shipments"
     ordering = ["-created_at"]
-    paginate_by = 2
+    paginate_by = 8
 
     def get_queryset(self):
         return Shipment.objects.select_related("factory", "created_by")
@@ -54,7 +54,7 @@ class ShipmentDetailView(LoginRequiredMixin, DetailView):
         shipment = self.get_object()
 
         # Paginate shipment items
-        items_per_page = 2
+        items_per_page = 8
         paginator = Paginator(shipment.items.all(), items_per_page)
         page_number = self.request.GET.get("page")
         page_obj = paginator.get_page(page_number)
@@ -137,23 +137,25 @@ class ShipmentConfirmView(LoginRequiredMixin, RoleRequiredMixin, View):
 class ShipmentUpdateView(LoginRequiredMixin, UpdateView):
     model = Shipment
     form_class = ShipmentForm
-    template_name = 'shipments/shipment_update_form.html'
-    success_url = reverse_lazy('shipment_list')
-    
+    template_name = "shipments/shipment_update_form.html"
+    success_url = reverse_lazy("shipment_list")
+
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        
+
         if self.object.confirmed:
-            messages.error(request, "Cannot update shipment. Shipment is already confirmed.")
-            return redirect('shipment_detail', pk=self.object.pk)
-            
+            messages.error(
+                request, "Cannot update shipment. Shipment is already confirmed."
+            )
+            return redirect("shipment_detail", pk=self.object.pk)
+
         return super().dispatch(request, *args, **kwargs)
 
 
 class ShipmentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         return self.request.user.role == "employee"
-    
+
     model = Shipment
     template_name = "shipments/shipment_confirm_delete.html"
     success_url = reverse_lazy("shipment_list")
@@ -166,9 +168,11 @@ class ShipmentItemDeleteView(LoginRequiredMixin, DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        
+
         if self.object.shipment.confirmed:
-            messages.error(request, "Cannot update shipment. Shipment is already confirmed.")
-            return redirect('shipment_detail', pk=self.object.shipment.pk)
-            
+            messages.error(
+                request, "Cannot update shipment. Shipment is already confirmed."
+            )
+            return redirect("shipment_detail", pk=self.object.shipment.pk)
+
         return super().dispatch(request, *args, **kwargs)
