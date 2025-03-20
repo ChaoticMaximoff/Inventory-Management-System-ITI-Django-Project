@@ -25,19 +25,6 @@ class LoginView(generic.View):
             if user is not None:
                 login(request, user)
                 return render(request, self.template_name, {'form': form, 'login_success': True})
-        else:
-            error_message = " ".join(form.non_field_errors())
-            if error_message:
-                sweetify.error(
-                    request,
-                    'Error',
-                    text=error_message,
-                    toast=True,
-                    position='top',
-                    timer=3000,
-                    timerProgressBar=True,
-                    showConfirmButton=False,
-                )
         return render(request, self.template_name, {'form': form})
     
         
@@ -58,10 +45,10 @@ class RegisterView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
         return render(self.request, self.template_name, {'form': form, 'register_success': True})
     
     def form_invalid(self, form):
-        error_message = " ".join([error for errors in form.errors.values() for error in errors])
-        if error_message:
-            sweetify.error(self.request, 'Error', text=error_message, toast=True, position='top', timer=3000, timerProgressBar=True, showConfirmButton=False)
         return self.render_to_response(self.get_context_data(form=form))
 
 def index(request):        
     return render(request, 'index.html')
+
+def dashboard(request):
+    return render(request, 'Dashboard.html')

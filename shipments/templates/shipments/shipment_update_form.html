@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}
+    Create Shipment
+{% endblock title %}
+{% block content %}
+    <h2>Update Shipment</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+    <a href="{% url 'shipment_list' %}" class="btn btn-secondary mt-2">Back</a>
+{% endblock content %}

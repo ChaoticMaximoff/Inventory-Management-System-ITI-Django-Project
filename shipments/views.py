@@ -1,9 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import ListView, DetailView
-from shipments.models import Shipment
+from django.views.generic import ListView, DetailView, DeleteView, UpdateView
+from shipments.models import Shipment, ShipmentItem
 from shipments.forms import ShipmentForm, ShipmentItemForm
 from django.core.paginator import Paginator
 
@@ -131,3 +132,43 @@ class ShipmentConfirmView(LoginRequiredMixin, RoleRequiredMixin, View):
         shipment.save()
         messages.success(request, "Shipment confirmed! Stock updated.")
         return redirect("shipment_detail", pk=shipment.id)
+
+
+class ShipmentUpdateView(LoginRequiredMixin, UpdateView):
+    model = Shipment
+    form_class = ShipmentForm
+    template_name = 'shipments/shipment_update_form.html'
+    success_url = reverse_lazy('shipment_list')
+    
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        
+        if self.object.confirmed:
+            messages.error(request, "Cannot update shipment. Shipment is already confirmed.")
+            return redirect('shipment_detail', pk=self.object.pk)
+            
+        return super().dispatch(request, *args, **kwargs)
+
+
+class ShipmentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    def test_func(self):
+        return self.request.user.role == "employee"
+    
+    model = Shipment
+    template_name = "shipments/shipment_confirm_delete.html"
+    success_url = reverse_lazy("shipment_list")
+
+
+class ShipmentItemDeleteView(LoginRequiredMixin, DeleteView):
+    model = ShipmentItem
+    # template_name = "shipments/shipment_item_confirm_delete.html"
+    success_url = reverse_lazy("shipment_list")
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        
+        if self.object.shipment.confirmed:
+            messages.error(request, "Cannot update shipment. Shipment is already confirmed.")
+            return redirect('shipment_detail', pk=self.object.shipment.pk)
+            
+        return super().dispatch(request, *args, **kwargs)
