@@ -71,7 +71,9 @@ class ShipmentCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
 
     def get(self, request):
         form = ShipmentForm()
-        return render(request, "shipments/shipment_form.html", {"form": form})
+        return render(
+            request, "shipments/shipment_form.html", {"form": form, "mode": "create"}
+        )
 
     def post(self, request):
         form = ShipmentForm(request.POST)
@@ -80,9 +82,20 @@ class ShipmentCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
             shipment.confirmed = False
             shipment.created_by = request.user
             shipment.save()
-            messages.success(request, "Shipment created successfully!")
+            sweetify.success(
+                request,
+                title="Success",
+                icon="success",
+                text="Shipment created successfully",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
             return redirect("shipment_list")
-        return render(request, "shipments/shipment_form.html", {"form": form})
+        return render(
+            request, "shipments/shipment_form.html", {"form": form, "mode": "create"}
+        )
 
 
 class ShipmentItemCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
@@ -138,19 +151,46 @@ class ShipmentConfirmView(LoginRequiredMixin, RoleRequiredMixin, View):
 class ShipmentUpdateView(LoginRequiredMixin, UpdateView):
     model = Shipment
     form_class = ShipmentForm
-    template_name = "shipments/shipment_update_form.html"
+    template_name = "shipments/shipment_form.html"
     success_url = reverse_lazy("shipment_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add mode to context to differentiate between create and update
+        context["mode"] = "update"
+        return context
 
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
 
         if self.object.confirmed:
-            messages.error(
-                request, "Cannot update shipment. Shipment is already confirmed."
+            sweetify.error(
+                request,
+                title="Cannot update shipment",
+                icon="error",
+                text="Shipment is already confirmed",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
             )
             return redirect("shipment_detail", pk=self.object.pk)
 
         return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        sweetify.success(
+            self.request,
+            title="Success",
+            icon="success",
+            text="Shipment updated successfully",
+            timer=2000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
+        return response
 
 
 class ShipmentDeleteView(LoginRequiredMixin, DeleteView):
