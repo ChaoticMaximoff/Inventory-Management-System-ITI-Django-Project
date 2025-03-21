@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from .models import Product
+from django.contrib.auth.decorators import login_required
 from .forms import ProductForm
 
 # Create your views here.
+@login_required
 def product_list(request):
     query = request.GET.get('q')
     if query:

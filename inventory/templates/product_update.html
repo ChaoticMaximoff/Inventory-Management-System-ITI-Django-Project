@@ -1,3 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+    <title>Update Product</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style/style.css' %}">
+{% endblock %}
+
+{% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8 col-sm-12">
@@ -14,7 +24,7 @@
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form.as_p }}
-                        <button type="submit" class="btn btn-warning w-100 mt-3">Update Product</button>
+                        <button type="submit" class="btn button w-100 mt-3">Update Product</button>
                     </form>
                 </div>
                 <div class="card-footer text-center">
@@ -24,3 +34,4 @@
         </div>
     </div>
 </div>
+{% endblock %}
