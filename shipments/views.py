@@ -117,8 +117,19 @@ class ShipmentItemCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
             shipment_item.shipment = shipment
             shipment_item.created_by = request.user
             shipment_item.save()
-            messages.success(request, "Item added to shipment!")
+
+            sweetify.success(
+                request,
+                title="Success",
+                icon="success",
+                text="Item added to shipment successfully",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
             return redirect("shipment_detail", pk=shipment.id)
+
         return render(
             request,
             "shipments/shipment_item_form.html",
@@ -133,17 +144,47 @@ class ShipmentConfirmView(LoginRequiredMixin, RoleRequiredMixin, View):
         shipment = get_object_or_404(Shipment, id=shipment_id, confirmed=False)
 
         if not shipment.items.exists():
-            messages.error(request, "Cannot confirm an empty shipment.")
+            sweetify.error(
+                request,
+                title="Cannot confirm shipment",
+                icon="error",
+                text="Cannot confirm an empty shipment",
+                timer=2000,
+                showConfirmButton=True,
+            )
             return redirect("shipment_detail", pk=shipment.id)
 
-        for item in shipment.items.all():
-            product = item.product
-            product.quantity += item.quantity
-            product.save()
+        try:
+            for item in shipment.items.all():
+                product = item.product
+                product.quantity += item.quantity
+                product.save()
 
-        shipment.confirmed = True
-        shipment.save()
-        messages.success(request, "Shipment confirmed! Stock updated.")
+            shipment.confirmed = True
+            shipment.save()
+
+            sweetify.success(
+                request,
+                title="Success",
+                icon="success",
+                text="Shipment confirmed and stock updated",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
+        except Exception as e:
+            sweetify.error(
+                request,
+                title="Error confirming shipment",
+                icon="error",
+                text=str(e),
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
+
         return redirect("shipment_detail", pk=shipment.id)
 
 
