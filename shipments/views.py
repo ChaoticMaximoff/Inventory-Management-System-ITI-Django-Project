@@ -38,11 +38,10 @@ class ShipmentListView(LoginRequiredMixin, ListView):
     model = Shipment
     template_name = "shipments/shipment_list.html"
     context_object_name = "shipments"
-    ordering = ["-created_at"]
     paginate_by = 8
 
     def get_queryset(self):
-        return Shipment.objects.select_related("factory", "created_by")
+        return Shipment.objects.order_by("confirmed")
 
 
 class ShipmentDetailView(LoginRequiredMixin, DetailView):
