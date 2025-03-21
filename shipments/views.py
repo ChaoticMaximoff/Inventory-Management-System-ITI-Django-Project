@@ -153,12 +153,27 @@ class ShipmentUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class ShipmentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    def test_func(self):
-        return self.request.user.role == "employee"
-
     model = Shipment
-    template_name = "shipments/shipment_confirm_delete.html"
     success_url = reverse_lazy("shipment_list")
+
+    def test_func(self):
+        shipment = self.get_object()
+        return not shipment.confirmed
+
+    def post(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+            if self.object.confirmed:
+                messages.error(
+                    request, "Cannot delete shipment. Shipment is already confirmed."
+                )
+                return redirect("shipment_list")
+            self.object.delete()
+            messages.success(request, "Shipment deleted successfully.")
+            return redirect("shipment_list")
+        except Exception as e:
+            messages.error(request, str(e))
+            return redirect("shipment_list")
 
 
 class ShipmentItemDeleteView(LoginRequiredMixin, DeleteView):
