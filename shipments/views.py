@@ -7,6 +7,7 @@ from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 from shipments.models import Shipment, ShipmentItem
 from shipments.forms import ShipmentForm, ShipmentItemForm
 from django.core.paginator import Paginator
+import sweetify
 
 
 class RoleRequiredMixin(UserPassesTestMixin):
@@ -160,15 +161,41 @@ class ShipmentDeleteView(LoginRequiredMixin, DeleteView):
         try:
             self.object = self.get_object()
             if self.object.confirmed:
-                messages.error(
-                    request, "Cannot delete shipment. Shipment is already confirmed."
+                sweetify.error(
+                    request,
+                    title="Cannot delete shipment",
+                    icon="error",
+                    text="Shipment is already confirmed",
+                    timer=2000,
+                    position="top-end",
+                    toast=True,
+                    showConfirmButton=False,
                 )
                 return redirect("shipment_list")
+
             self.object.delete()
-            messages.success(request, "Shipment deleted successfully.")
+            sweetify.success(
+                request,
+                title="Success",
+                icon="success",
+                text="Shipment deleted successfully",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
             return redirect("shipment_list")
         except Exception as e:
-            messages.error(request, str(e))
+            sweetify.error(
+                request,
+                title="Error",
+                icon="error",
+                text=str(e),
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
             return redirect("shipment_list")
 
 
@@ -183,9 +210,27 @@ class ShipmentItemDeleteView(LoginRequiredMixin, DeleteView):
         shipment = self.object.shipment
 
         if shipment.confirmed:
-            messages.error(request, "Cannot delete item from confirmed shipment.")
+            sweetify.error(
+                request,
+                title="Cannot delete item",
+                icon="error",
+                text="Cannot delete from confirmed shipment",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
             return redirect("shipment_detail", pk=shipment.pk)
 
         self.object.delete()
-        messages.success(request, "Item removed from shipment successfully.")
+        sweetify.success(
+            request,
+            title="Success",
+            icon="success",
+            text="Item removed successfully",
+            timer=2000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
         return redirect("shipment_detail", pk=shipment.pk)
