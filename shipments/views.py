@@ -8,6 +8,7 @@ from shipments.models import Shipment, ShipmentItem
 from shipments.forms import ShipmentForm, ShipmentItemForm
 from django.core.paginator import Paginator
 import sweetify
+from .filters import ShipmentFilter
 
 
 class RoleRequiredMixin(UserPassesTestMixin):
@@ -41,7 +42,14 @@ class ShipmentListView(LoginRequiredMixin, ListView):
     paginate_by = 8
 
     def get_queryset(self):
-        return Shipment.objects.order_by("confirmed")
+        queryset = Shipment.objects.order_by("confirmed")
+        self.filterset = ShipmentFilter(self.request.GET, queryset=queryset)
+        return self.filterset.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["filter"] = self.filterset
+        return context
 
 
 class ShipmentDetailView(LoginRequiredMixin, DetailView):
