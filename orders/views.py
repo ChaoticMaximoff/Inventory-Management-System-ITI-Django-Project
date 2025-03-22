@@ -41,6 +41,7 @@ class OrderDetailsView(DetailView):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(**kwargs)
+    
 
 class OrdersCreateView(LoginRequiredMixin, View):
     #required_roles=["EMPLOYEE"] #any employee can create an order
@@ -65,12 +66,13 @@ class OrderCreateItemView(LoginRequiredMixin, View):
     
     def post(self, request, pk):
         order = get_object_or_404(Order, id=pk)
-        form = (request.POST)
+        form = OrderItemForm(request.POST)
         if form.is_valid():
             item = form.save(commit=False)
             item.created_by_user = request.user
+            item.order = order
             item.save()
-            return redirect("order-items", pk=Order.id)
+            return redirect("orders")
         return render(request, "order/order_item_form.html", {"form":form, "order":order})
     
     def get_context_data(self, **kwargs):
@@ -79,21 +81,22 @@ class OrderCreateItemView(LoginRequiredMixin, View):
             
 class OrderConfirmView(LoginRequiredMixin, View):
     def post(self, request, pk):
-        order = get_object_or_404(Order, id=pk, confirmed=False)
+        order = get_object_or_404(Order, id=pk, status='PENDING')
 
         if not order.items.exists():
             messages.error(request, "Cannot confirm an empty shipment.")
-            return redirect("shipment_detail", pk=order.id)
+            return redirect("orders", pk=order.id)
 
         for item in order.items.all():
             product = item.product
             product.quantity -= item.quantity
+            Order.created_at = Order.created_at
             product.save()
 
-        order.confirmed = True
+        order.status = 'CONFIRMED'
         order.save()
-        messages.success(request, "Shipment confirmed! Stock updated.")
-        return redirect("shipment_detail", pk=order.id)
+        messages.success(request, "order confirmed! Stock updated.")
+        return redirect("order_items", pk=order.id)
 
 
 class SupermarketOrderListView(ListView):

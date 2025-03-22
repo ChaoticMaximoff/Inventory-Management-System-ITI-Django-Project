@@ -17,4 +17,4 @@ class OrdersForm(forms.ModelForm):
 class OrderItemForm(forms.ModelForm):
     class Meta:
         model = OrderItem
-        fields =["order", "product", "quantity"]
+        fields =[ "product", "quantity"]
