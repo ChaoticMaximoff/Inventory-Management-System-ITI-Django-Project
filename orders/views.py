@@ -60,12 +60,12 @@ class OrdersCreateView(LoginRequiredMixin, View):
 
 class OrderCreateItemView(LoginRequiredMixin, View):
     def get(self, request, pk):
-        order = get_object_or_404(Order, id=pk)
+        order = get_object_or_404(Order, id=pk, status="PENDING")
         form = OrderItemForm()
         return render(request, "orders/order_item_form.html", {"form":form, "order":order})
     
     def post(self, request, pk):
-        order = get_object_or_404(Order, id=pk)
+        order = get_object_or_404(Order, id=pk, status="PENDING")
         form = OrderItemForm(request.POST)
         if form.is_valid():
             item = form.save(commit=False)
