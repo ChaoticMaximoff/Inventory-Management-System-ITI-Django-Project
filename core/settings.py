@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "supermarkets",
     "django_filters",
     "widget_tweaks",
+    "core",
 ]
 
 MIDDLEWARE = [
