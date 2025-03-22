@@ -69,5 +69,27 @@
     <div class="text-center mt-4">
         <a href="{% url 'inventory:product_create' %}" class="btn delete-button" style="background-color: var(--primary-color); color: white;">Add New Product</a>
     </div>
+    {% if messages %}
+        {% for message in messages %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                title: "Deletion Error",
+                text: "{{ message }}",	
+                icon: "error",
+                toast: true,
+                position: "top",
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true
+                });
+            });
+            </script>
+        {% endfor %}
+    {% endif %}
+    {% if messages %}
+    {% for message in messages %}
+    {% endfor %}
+    {% endif %}
 </div>
 {% endblock %}

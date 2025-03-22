@@ -35,7 +35,7 @@ class ShipmentItem(models.Model):
     shipment = models.ForeignKey(
         Shipment, on_delete=models.CASCADE, related_name="items"
     )
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="shipment_items")
     quantity = models.PositiveIntegerField()
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

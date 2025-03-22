@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from .models import Product
 from django.contrib.auth.decorators import login_required
 from .forms import ProductForm
+from django.contrib import messages
 
 # Create your views here.
 @login_required
@@ -19,6 +20,7 @@ def product_list(request):
     }
     return render(request, 'product_list.html', context)
 
+@login_required
 def create_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -34,6 +36,7 @@ def create_product(request):
     return render(request, 'product_create.html', context)
 
 
+@login_required
 def product_update(request, pk):
     product = get_object_or_404(Product, id=pk)
     if request.method == 'POST':
@@ -45,9 +48,17 @@ def product_update(request, pk):
         form = ProductForm(instance=product)
     return render(request, 'product_update.html', {'product': product, 'form': form})
 
+@login_required	
 def product_delete(request, pk):
     product = get_object_or_404(Product, id=pk)
+    related_shipments = product.shipment_items.all()
+    related_orders = product.order_items.all()
+    
     if request.method == 'POST':
+        if related_shipments or related_orders:
+            messages.add_message(request, messages.ERROR, f'This product is related to a shipment or an order. Delete them first to be able to delete this product.')
+            return redirect('inventory:product_list')
+        
         product.delete()
         return redirect('inventory:product_list')
     return render(request, 'product_delete.html', {'product': product})
