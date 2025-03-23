@@ -4,21 +4,15 @@ from .models import Product
 from django.contrib.auth.decorators import login_required
 from .forms import ProductForm
 from django.contrib import messages
-from django.core.paginator import Paginator
 
 # Create your views here.
 @login_required
 def product_list(request):
     query = request.GET.get('q')
     if query:
-        products_queryset = Product.objects.filter(name__icontains=query)
+        products = Product.objects.filter(name__icontains=query)
     else:
-        products_queryset = Product.objects.all()
-    
-    # Add pagination
-    paginator = Paginator(products_queryset, 5) 
-    page_number = request.GET.get('page')
-    products = paginator.get_page(page_number)
+        products = Product.objects.all()
     
     context = {
         'products': products,
