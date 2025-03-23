@@ -16,6 +16,7 @@ class Order(models.Model):
     supermarket = models.ForeignKey(
         Supermarket, on_delete=models.RESTRICT, related_name="orders"
     )
+    receive_date = models.DateField()
     created_at = models.DateField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
     created_by_user = models.ForeignKey(
