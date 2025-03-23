@@ -489,11 +489,6 @@
       const salesData = JSON.parse(document.getElementById("sales-data").textContent);
       const purchaseData = JSON.parse(document.getElementById("purchase-data").textContent);
 
-      // Log for debugging
-      console.log("Chart Labels:", chartLabels);
-      console.log("Sales Data:", salesData);
-      console.log("Purchase Data:", purchaseData);
-
       // Sales & Purchase Chart
       const ctx = document.getElementById("salesChart").getContext("2d");
       const salesChart = new Chart(ctx, {
