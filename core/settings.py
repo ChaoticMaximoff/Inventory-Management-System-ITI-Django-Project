@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     "sweetify",
     "factories",
     "supermarkets",
+    "django_filters",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
