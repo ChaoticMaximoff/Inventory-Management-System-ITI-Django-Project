@@ -252,12 +252,12 @@
           </tr>
         </thead>
         <tbody>
-          {% for product in products %}
+          {% for product in products|slice:":4" %}
           <tr>
             <td>
               <img
                 class="product-img"
-                src="{{ product.image }}"
+                src="{{ product.image.url }}"
                 alt="{{ product.name }}"
                 style="max-width: 50px; height: auto" />
               {{ product.name }}
@@ -302,11 +302,11 @@
         </tr>
       </thead>
       <tbody>
-        {% for item in order_items %}
+        {% for item in order_items|slice:":5" %}
         <tr>
           <td>
             <img
-              src="{{ item.product.image }}"
+              src="{{ item.product.image.url }}"
               alt="{{ item.product.name }}"
               style="max-width: 50px; height: auto" />
             {{ item.product.name }}
@@ -324,8 +324,58 @@
             <a href="{% url 'order_items' item.order.id %}">
               <i class="fas fa-eye text-primary"></i>
             </a>
-            <i class="fas fa-edit text-success"></i>
-            <i class="fas fa-trash text-danger"></i>
+            <a href="{% url 'order-update' item.order.id %}">
+              <i class="fas fa-edit text-success"></i>
+            </a>
+            <button
+              type="button"
+              class="btn"
+              data-bs-toggle="modal"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteorder-{{item.order.id}}">
+              <i class="fas fa-trash text-danger"></i>
+            </button>
+            <!-- Confirm Delete Modal -->
+            <div
+              class="modal fade"
+              id="deleteorder-{{item.order.id}}"
+              tabindex="-1"
+              aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                      Confirm Delete
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    Are you sure you want to delete this order?
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal">
+                      Close
+                    </button>
+                    <form
+                      action="{% url 'order-delete' item.order.id %}"
+                      method="post">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">
+                        Confirm
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
           </td>
         </tr>
         {% empty %}
@@ -359,7 +409,7 @@
               <tr>
                 <td>
                   <img
-                    src="{{ product.image }}"
+                    src="{{ product.image.url }}"
                     alt="{{ product.name }}"
                     style="max-width: 50px; height: auto" />
                   {{ product.name }}
