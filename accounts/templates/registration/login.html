@@ -88,7 +88,11 @@
           timer: 1000,
           timerProgressBar: true
         }).then(() => {
-          window.location.href = "{% url 'accounts:index' %}";
+          {%if user.is_authenticated and user.role == "manager"%}
+          window.location.href = "{% url 'accounts:dashboard' %}";
+          {%else %}
+          window.location.href = "{% url 'inventory:product_list' %}";
+          {%endif %}
         });
       });
     </script>

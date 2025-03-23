@@ -107,11 +107,21 @@
   .pro {
     color: rgba(67, 57, 242, 0.8);
   }
+  .btn-custom {
+    background-color: #4339f2;
+    color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-decoration: none;
+  }
+  a {
+    text-decoration: none !important;
+  }
 </style>
 {% endblock extra_head%} {% block content %}
 <div class="container-fluid d-flex justify-content-between">
+  {%if user.is_authenticated and user.role == "manager"%}
   <span class="fw-bold">Activity</span>
-
   <div class="d-flex align-items-center">
     <i class="fas fa-calendar-alt me-2"></i>
     <input
@@ -142,12 +152,12 @@
   <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
     <div class="card activity-card">
       <div class="d-flex justify-content-between align-items-center">
-        <span>Inventory Value</span>
+        <span>Total Products</span>
         <div class="icon-box bg-primary">
           <i class="fas fa-rupee-sign"></i>
         </div>
       </div>
-      <div class="value mt-2">₹2,54,890</div>
+      <div class="value mt-2">{{total_products}}</div>
       <div class="percentage text-success mt-1">
         <i class="fas fa-arrow-up"></i> 14.6% from last week
       </div>
@@ -161,7 +171,7 @@
         <span>Total Orders</span>
         <div class="icon-box bg-danger"><i class="fas fa-receipt"></i></div>
       </div>
-      <div class="value mt-2">2,656</div>
+      <div class="value mt-2">{{total_orders}}</div>
       <div class="percentage text-success mt-1">
         <i class="fas fa-arrow-up"></i> 7.56% from last week
       </div>
@@ -175,7 +185,7 @@
         <span>New Orders</span>
         <div class="icon-box bg-warning"><i class="fas fa-users"></i></div>
       </div>
-      <div class="value mt-2">769</div>
+      <div class="value mt-2">{{order_status_counts.pending}}</div>
       <div class="percentage text-success mt-1">
         <i class="fas fa-arrow-up"></i> 1.23% from last week
       </div>
@@ -191,7 +201,7 @@
           <i class="fas fa-box"></i>
         </div>
       </div>
-      <div class="value mt-2">367</div>
+      <div class="value mt-2">{{order_status_counts.confirmed}}</div>
       <div class="percentage text-danger mt-1">
         <i class="fas fa-arrow-down"></i> 7.87% from last week
       </div>
@@ -232,52 +242,30 @@
           <li><a class="dropdown-item" href="#">Month</a></li>
         </ul>
       </div>
+
       <table class="table mt-2">
         <thead>
           <tr>
             <th>Product</th>
-            <th>Price</th>
             <th>Orders</th>
             <th>Stock</th>
           </tr>
         </thead>
         <tbody>
+          {% for product in products %}
           <tr>
             <td>
-              <img src={% static "images/Grace.png" %} alt="Product"
-              style="width: 50px; height: 50px" />Grace Accent Chair
+              <img
+                class="product-img"
+                src="{{ product.image }}"
+                alt="{{ product.name }}"
+                style="max-width: 50px; height: auto" />
+              {{ product.name }}
             </td>
-            <td>₹12,799</td>
-            <td>34</td>
-            <td>510</td>
+            <td>{{ product.order_item_count|default:0 }}</td>
+            <td>{{ product.quantity }}</td>
           </tr>
-          <tr>
-            <td>
-              <img src={% static "images/Carven.png" %} alt="Product"
-              style="width: 50px; height: 50px" />Grace Carven Lounge Chair
-            </td>
-            <td>₹11,799</td>
-            <td>28</td>
-            <td>417</td>
-          </tr>
-          <tr>
-            <td>
-              <img src={% static "images/Pashe.png" %} alt="Product"
-              style="width: 50px; height: 50px" />Grace Pashe Chair
-            </td>
-            <td>₹4,799</td>
-            <td>20</td>
-            <td>357</td>
-          </tr>
-          <tr>
-            <td>
-              <img src={% static "images/Cairo.png" %} alt="Product"
-              style="width: 50px; height: 50px" />Grace Cario Patio Table
-            </td>
-            <td>₹5,399</td>
-            <td>18</td>
-            <td>490</td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
       <div class="d-flex justify-content-between align-items-center">
@@ -305,76 +293,44 @@
     <table class="table align-middle mt-3">
       <thead>
         <tr>
-          <th><input type="checkbox" /></th>
           <th>Product</th>
           <th>Order ID</th>
           <th>Customer Name</th>
           <th>Quantity</th>
-          <th>Amount</th>
-          <th>Payment</th>
           <th>Status</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody>
+        {% for item in order_items %}
         <tr>
-          <td><input type="checkbox" /></td>
           <td>
             <img
-              src="{% static 'images/Grace.png' %}"
-              alt="Grace Accent Chair" />
-            Grace Accent Chair
+              src="{{ item.product.image }}"
+              alt="{{ item.product.name }}"
+              style="max-width: 50px; height: auto" />
+            {{ item.product.name }}
           </td>
-          <td>#456787</td>
-          <td>Rajesh Kumar</td>
-          <td>2</td>
-          <td>₹25,598</td>
-          <td><span class="badge badge-paid">Paid</span></td>
-          <td><span class="badge badge-delivered">Delivered</span></td>
-          <td class="action-icons">
-            <i class="fas fa-eye text-primary"></i>
-            <i class="fas fa-edit text-success"></i>
-            <i class="fas fa-trash text-danger"></i>
-          </td>
-        </tr>
-        <tr>
-          <td><input type="checkbox" /></td>
+          <td>#{{ item.order.id }}</td>
+          <td>{{ item.created_by_user.username|default:"Unknown User" }}</td>
+          <td>{{ item.quantity }}</td>
           <td>
-            <img
-              src="{% static 'images/Carven.png' %}"
-              alt="Carven Lounge Chair" />
-            Carven Lounge Chair
+            <span
+              class="badge {% if item.order.status == 'PENDING' %}bg-warning {% elif item.order.status == 'CONFIRMED' %}bg-success {% endif %}">
+              {{ item.order.status|title }}
+            </span>
           </td>
-          <td>#569870</td>
-          <td>Sasidharan T</td>
-          <td>3</td>
-          <td>₹11,799</td>
-          <td><span class="badge badge-pending">Pending</span></td>
-          <td><span class="badge badge-processing">Processing</span></td>
           <td class="action-icons">
             <i class="fas fa-eye text-primary"></i>
             <i class="fas fa-edit text-success"></i>
             <i class="fas fa-trash text-danger"></i>
           </td>
         </tr>
+        {% empty %}
         <tr>
-          <td><input type="checkbox" /></td>
-          <td>
-            <img src="{% static 'images/Lounge.png' %}" alt="Lounge Chair" />
-            Lounge Chair
-          </td>
-          <td>#569870</td>
-          <td>Sasidharan T</td>
-          <td>3</td>
-          <td>₹11,799</td>
-          <td><span class="badge badge-pending">Pending</span></td>
-          <td><span class="badge badge-shipped">Shipped</span></td>
-          <td class="action-icons">
-            <i class="fas fa-eye text-primary"></i>
-            <i class="fas fa-edit text-success"></i>
-            <i class="fas fa-trash text-danger"></i>
-          </td>
+          <td colspan="7" class="text-center">No order items found.</td>
         </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
@@ -397,38 +353,30 @@
               </tr>
             </thead>
             <tbody>
+              {% for product in low_stock_products %}
               <tr>
                 <td>
-                  <img src="{% static "images/Grace.png" %}" alt="Grace Accent
-                  Chair" /> Grace Accent Chair
+                  <img
+                    src="{{ product.image }}"
+                    alt="{{ product.name }}"
+                    style="max-width: 50px; height: auto" />
+                  {{ product.name }}
                 </td>
-                <td>#345675</td>
-                <td>Warehouse 01</td>
-                <td class="low-stock">05</td>
+                <td>#{{ product.id }}</td>
+                <td>{{ product.latest_supermarket|default:"Not Assigned" }}</td>
+                <td class="low-stock">{{ product.quantity }}</td>
               </tr>
+              {% empty %}
               <tr>
-                <td>
-                  <img src="{% static "images/Carven.png" %}" alt="Carven Lounge
-                  Chair" /> Carven Lounge Chair
+                <td colspan="4" class="text-center">
+                  No low stock products found.
                 </td>
-                <td>#4568932</td>
-                <td>Warehouse 02</td>
-                <td class="low-stock">09</td>
               </tr>
-              <tr>
-                <td>
-                  <img src="{% static "images/Lounge.png" %}" alt="Lounge Chair"
-                  /> Lounge Chair
-                </td>
-                <td>#642907</td>
-                <td>Warehouse 03</td>
-                <td class="low-stock">10</td>
-              </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
       </div>
-
       <div class="col-xl-4 col-md-12">
         <div class="card text-center Product-Summary-card">
           <h5 class="fw-bold text-start pt-4 px-4">Product Summary</h5>
@@ -464,7 +412,20 @@
     </div>
   </div>
 </div>
-
+{% else %}
+<div class="container">
+  <h1 class="text-center">Access Denied</h1>
+  <p class="text-center">
+    You do not have permission to view this page. Please contact your
+    administrator.
+  </p>
+  <a
+    href="{% url 'inventory:product_list' %}"
+    class="btn btn-custom d-block w-50 mx-auto">
+    Go to Home
+  </a>
+</div>
+{% endif %}
 <script>
   const ctx = document.getElementById("salesChart").getContext("2d");
   const salesChart = new Chart(ctx, {
@@ -519,4 +480,5 @@
     }
   });
 </script>
+
 {% endblock %}
