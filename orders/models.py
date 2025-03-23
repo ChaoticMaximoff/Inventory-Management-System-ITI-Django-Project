@@ -2,6 +2,7 @@ from django.db import models
 from inventory.models import Product
 from supermarkets.models import Supermarket
 from django.conf import settings
+from django.core.validators import MinValueValidator
 
 
 class Order(models.Model):

@@ -1,6 +1,6 @@
 {% extends "base.html" %} {% load static %} {% block title %} Shipments
 {%endblock title %} {% block content %}
-<div class="container">
+
   <h2>Shipments</h2>
 
   <!-- Filter Form -->
@@ -20,10 +20,10 @@
           {{ filter.form.confirmed }}
         </div>
         <div class="col-md-1">
-          <button type="submit" class="btn btn-primary w-100">Filter</button>
+          <button type="submit" class="btn btn-view-all w-100" style="background-color: #4339f2; color:white">Filter</button>
         </div>
         <div class="col-md-1">
-          <a href="{% url 'shipment_list' %}" class="btn btn-secondary w-100"
+          <a href="{% url 'shipment_list' %}" class="btn btn-view-all w-100 text-decoration-none" style="border:1px solid #4339f2"
             >Clear</a
           >
         </div>
@@ -31,10 +31,14 @@
     </div>
   </div>
 
-  <a href="{% url 'shipment_create' %}" class="btn btn-primary mb-3"
+  <a href="{% url 'shipment_create' %}" class="btn mb-3 text-decoration-none" style="border: 1px solid #4339f2; color:#4339f2"
     >Create Shipment</a
   >
-  <table class="table">
+
+  <div class="my-4">
+    <div class="card orders-card" style="overflow: auto">
+      <div class="d-flex justify-content-between gap-5 align-items-center">
+  <table class="table align-middle mt-3">
     <thead>
       <tr>
         <th>Factory</th>
@@ -45,71 +49,84 @@
       </tr>
     </thead>
     <tbody>
-      {% for shipment in shipments %}
       <tr>
-        <td>{{ shipment.factory.name }}</td>
+        
+          
+            {% for shipment in shipments %}
+        
+        <td>{{shipment.factory.name}}</td>
         <td>{{ shipment.receive_date }}</td>
-        <td>{{ shipment.confirmed|yesno:"✅,❌" }}</td>
+        <td>{{ shipment.confirmed }}</td>
         <td>
           {% if shipment.created_by %} {{ shipment.created_by.username }}
           {%else%}
           <em>Unknown</em>
           {% endif %}
-        </td>
-        <td>
-          <a
-            href="{% url 'shipment_detail' shipment.id %}"
-            class="btn btn-info btn-sm"
-            >View</a
-          >
-          {% if not shipment.confirmed %}
-          <button
-            class="btn btn-danger btn-sm delete-shipment"
-            data-shipment-id="{{ shipment.id }}"
-          >
-            Delete
-          </button>
-          {% endif %}
-        </td>
+          <td>
+            <a
+              href="{% url 'shipment_detail' shipment.id %}"
+              class="btn btn-sm"
+              ><i class="fas fa-eye text-primary"></i></a
+            >
+            {% if not shipment.confirmed %}
+            <button
+              class="btn btn-sm delete-shipment"
+              data-shipment-id="{{ shipment.id }}"
+            >
+            <i class="fas fa-trash text-danger"></i>
+            </button>
+            {% endif %}
+          </td>
       </tr>
       {% empty %}
-      <tr>
-        <td colspan="5">No shipments available.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+            <tr>
+                <td colspan="6" class="p-4 text-center">No orders found.</td>
+            </tr>
+        {% endfor %}
+      </table>
+</div>
+
+
+  
+  
+
   {% if is_paginated %}
-  <nav>
+  <nav class="pagin">
+    <span>{{page_obj.object_list.count }} items are shown</span>
+    <span class="float-end">
     <ul class="pagination">
       {% if page_obj.has_previous %}
       <li class="page-item">
-        <a class="page-link" href="?page=1">⏮ First</a>
+        <a  href="?page=1">first</a>
       </li>
       <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.previous_page_number }}"
-          >⬅ Previous</a
+        <a href="?page={{ page_obj.previous_page_number }}" 
+          >⬅</a
         >
       </li>
       {% endif %}
-      <li class="page-item active">
-        <span class="page-link"
-          >Page {{ page_obj.number }} of {{ paginator.num_pages }}</span
+      <li class="page-item ">
+        <span  style="background-color: #4339f2; color:white; border-radius: 4px; padding-left: 10px; padding-right: 10px;"
+          >{{ page_obj.number }}</span
         >
       </li>
       {% if page_obj.has_next %}
       <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.next_page_number }}"
-          >Next ➡</a
+        <a href="?page={{ page_obj.next_page_number }}"
+          >➡</a
         >
       </li>
       <li class="page-item">
-        <a class="page-link" href="?page={{ paginator.num_pages }}">Last ⏭</a>
+        <a href="?page={{ paginator.num_pages }}">last</a>
       </li>
       {% endif %}
     </ul>
   </nav>
+</span>
   {% endif %}
+  </div>
+  </div>
+  
 
   <!-- Delete Confirmation Modal -->
   <div
@@ -136,21 +153,20 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-secondary"
+            class="btn" style="color:#4339f2; border:1px solid #4339f2"
             data-bs-dismiss="modal"
           >
             Cancel
           </button>
           <form id="deleteForm" method="POST">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Delete</button>
+            <button type="submit" class="btn" style="background-color: #4339f2; color:white">Delete</button>
           </form>
         </div>
       </div>
     </div>
   </div>
-</div>
-{% endblock %} {% block extra_js %}
+{% endblock %}{% block extra_js %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     // Get the modal element
@@ -170,111 +186,3 @@
   });
 </script>
 {% endblock %}
-{% extends "base.html" %}
-{% block title %}
-    Shipments
-{% endblock title %}
-{% block content %}
-
- 
-<style>
-    .action-icons i {
-      cursor: pointer;
-      margin: 0 5px;
-    }
-    .btn-view-all {
-      border: 1px solid #4339f2;
-      color: #4339f2;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    .orders-card {
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-      padding: 15px;
-    }
-    </style>
-
-
-<h5 class="fw-bold" >Recent shipments</h5>
-<div class="my-4">
-    <div class="card orders-card" style="overflow: auto">
-        <div class="d-flex justify-content-between gap-5 align-items-center">
-        <div class="input-group w-25">
-            <button class="input-group-text" >
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-            <input
-                type="text"
-                class="form-control"
-                placeholder="Search"
-                aria-label="Search"
-                aria-describedby="basic-addon1" />
-            </div>
-    <div>
-        <a href="{% url 'shipment_create' %}"><button class="btn btn-view-all me-2" style="background-color: #4339f2; color:white"> + Add A Shipments</button></a> 
-        <button class="btn btn-view-all me-2">View All</button>
-    </div>
-        </div>
-        <table class="table align-middle mt-3">
-        <thead>
-            <tr>
-            <th><input type="checkbox" /></th>
-            <th>Factory</th>
-            <th>Receive Date</th>
-            <th>Confirmed</th>
-            <th>Created By</th>
-            <th>Action</th>
-            </tr>
-        </thead>
-        {% for shipment in shipments %}
-        <tbody>
-            <tr>
-            <td><input type="checkbox" /></td>
-            <td>{{ shipment.factory.name }}</td>
-            <td>{{ shipment.receive_date }}</td>
-            <td>{{ shipment.confirmed }}</td>
-            <td> {% if shipment.created_by %}
-                {{ shipment.created_by.username }}
-            {% else %}
-                <em>Unknown</em>
-            {% endif %}</td>
-            <td class="action-icons">
-                <a href="{% url 'shipment_detail' shipment.id %}"><i class="fas fa-eye text-primary"></i></a>
-                <i class="fas fa-edit text-success"></i>
-                <i class="fas fa-trash text-danger"></i>
-            </td>
-            </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="6" class="p-4 text-center">No Shipments found.</td>
-                </tr>
-            {% endfor %}
-            {% if is_paginated %}
-            <nav>
-                <ul class="pagination">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page=1">⏮ First</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">⬅ Previous</a>
-                        </li>
-                    {% endif %}
-                    <li class="page-item active">
-                        <span class="page-link">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
-                    </li>
-                    {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next ➡</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ paginator.num_pages }}">Last ⏭</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
-  
-{% endblock content %}

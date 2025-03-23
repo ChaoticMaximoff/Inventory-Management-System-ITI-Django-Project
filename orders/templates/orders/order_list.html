@@ -2,27 +2,37 @@
 
 {% block content %}
 
-<style>
-    .action-icons i {
-      cursor: pointer;
-      margin: 0 5px;
-    }
-    .btn-view-all {
-      border: 1px solid #4339f2;
-      color: #4339f2;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    .orders-card {
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-      padding: 15px;
-    }
-    </style>
-
-
 <h5 class="fw-bold" >Recent Orders</h5>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">{{ filter.form.supermarket.label }}</label>
+        {{ filter.form.supermarket }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">{{ filter.form.created_at.label }}</label>
+        {{ filter.form.created_at }}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">{{ filter.form.status.label }}</label>
+        {{ filter.form.status }}
+      </div>
+      <div class="col-md-1">
+        <button type="submit" class="btn btn-view-all w-100" style="background-color: #4339f2; color:white">Filter</button>
+      </div>
+      <div class="col-md-1">
+        <a href="{% url 'orders' %}" class="btn btn-view-all w-100 text-decoration-none" style="border:1px solid #4339f2"
+          >Clear</a
+        >
+      </div>
+    </form>
+  </div>
+</div>
+
+<a href="{% url 'order_create' %}" class="btn fw-semibold me-2 text-decoration-none" style="border: 1px solid #4339f2; color:#4339f2"> Create An Order</a> 
+
 <div class="my-4">
     <div class="card orders-card" style="overflow: auto">
       <div class="d-flex justify-content-between gap-5 align-items-center">
@@ -38,14 +48,11 @@
               aria-describedby="basic-addon1" />
           </div>
     <div>
-     <a href="{% url 'order_create' %}"><button class="btn btn-view-all fw-semibold me-2" style="background-color: #4339f2; color:white"> + Add An Order</button></a> 
-      <button class="btn btn-view-all me-2">View All</button>
     </div>
       </div>
       <table class="table align-middle mt-3">
         <thead>
           <tr>
-            <th><input type="checkbox" /></th>
             <th>Supermarket Name</th>
             <th>Order ID</th>
             <th>Created At</th>
@@ -57,7 +64,6 @@
         {% for order in orders %}
         <tbody>
           <tr>
-            <td><input type="checkbox" /></td>
             <td>
               
                 {{ order.supermarket }}
@@ -77,4 +83,42 @@
                     <td colspan="6" class="p-4 text-center">No orders found.</td>
                 </tr>
             {% endfor %}
+          </table>
+
+
+
+          {% if is_paginated %}
+          <nav class="pagin">
+            <span>{{page_obj.object_list.count }} items are shown</span>
+            <span class="float-end">
+            <ul class="pagination">
+              {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a  href="?page=1">first</a>
+              </li>
+              <li class="page-item">
+                <a href="?page={{ page_obj.previous_page_number }}" 
+                  >⬅</a
+                >
+              </li>
+              {% endif %}
+              <li class="page-item ">
+                <span  style="background-color: #4339f2; color:white; border-radius: 4px; padding-left: 10px; padding-right: 10px;"
+                  >{{ page_obj.number }}</span
+                >
+              </li>
+              {% if page_obj.has_next %}
+              <li class="page-item">
+                <a href="?page={{ page_obj.next_page_number }}"
+                  >➡</a
+                >
+              </li>
+              <li class="page-item">
+                <a href="?page={{ paginator.num_pages }}">last</a>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </span>
+          {% endif %}
 {% endblock %}

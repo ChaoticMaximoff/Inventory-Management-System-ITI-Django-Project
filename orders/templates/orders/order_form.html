@@ -1,10 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
     <h1>Create Order</h1>
-    <form method="post">
+    <div class="my-4">
+        <div class="card orders-card" style="overflow: auto">
+          <div class="d-flex justify-content-between gap-5 align-items-center">
+    <form method="post" class="align-middle mt-3 p-4">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Create Order</button>
+        <label class="form-label">Supermarket: </label>
+        {{ form.supermarket }}
+
+        <a href="{% url 'orders' %}" class="btn text-decoration-none border px-4"> cancel</a>
+        <button type="submit" class="btn m-5 button-1st">Create Order</button>
     </form>
+          </div>
+        </div>
+    </div>
+    
 {% endblock %}

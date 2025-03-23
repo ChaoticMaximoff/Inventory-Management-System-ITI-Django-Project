@@ -1,25 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Order Item</title>
-    <!-- Add Bootstrap CSS for styling (optional) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1>Create Order Item for Order #{{ order.id }}</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <!-- Render the form fields -->
-            
-            
-            <button type="submit" class="btn btn-primary">Create Order Item</button>
-        </form>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="my-4">
+    <div class="card orders-card" style="overflow: auto">
+      <div class="d-flex justify-content-between gap-5 align-items-center">
+        <div class="container mt-5">
+            <h1>Create Order Item for Order #{{ order.id }}</h1>
+            <form method="post">
+                {% csrf_token %}
+                <div class="m-4">
+                <label class="form-label m-2"> Product:  </label>
+                {{ form.product }}
+                </div>
+
+                <!-- Render the form fields -->
+                 <div class="m-4">
+                <label class="form-label m-2"> Quantity:  </label>
+                <div class="w-25">{{ form.quantity }}</div>
+                </div>
+                
+                
+                <button type="submit" class="btn m-5" style="background-color: #4339f2; color: white;">Create Order Item</button>
+                <a class="text-decoration-none btn" style="color: #4339f2; border:1px solid #4339f2;" href="{% url 'order_items' order.id %}">cancel</a>
+            </form>
+            </div>
+        </div>
     </div>
-    <!-- Add Bootstrap JS for styling (optional) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+{% endblock %}

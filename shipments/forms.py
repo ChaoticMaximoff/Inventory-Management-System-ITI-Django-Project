@@ -20,9 +20,23 @@ class ShipmentForm(forms.ModelForm):
         if quantity <= 0:
             raise forms.ValidationError("Quantity must be greater than zero.")
         return quantity
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['factory'].widget.attrs.update({'class': 'form-select w-25'})
+        self.fields['receive_date'].widget.attrs.update({'class': 'form-select'})
+
+
 
 
 class ShipmentItemForm(forms.ModelForm):
     class Meta:
         model = ShipmentItem
         fields = ["product", "quantity"]
+        
+    def __init___(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['product'].widget.attrs.update({'class': 'form-select w-25'})
+        self.fields['quantity'].widget.attrs.update({'class': 'form-control'})
+
+

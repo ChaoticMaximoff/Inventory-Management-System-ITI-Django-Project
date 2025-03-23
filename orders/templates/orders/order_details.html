@@ -2,27 +2,22 @@
 
 {% block content %}
 
-<style>
-    .action-icons i {
-      cursor: pointer;
-      margin: 0 5px;
-    }
-    .btn-view-all {
-      border: 1px solid #4339f2;
-      color: #4339f2;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    .orders-card {
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-      padding: 15px;
-    }
-    </style>
 
-
-<h5 class="fw-bold" >Products for order </h5>
+<h5 class="fw-bold" >Products for order #{{order_items.id}} </h5>
+<p> {{order_items.status}} </p>
+<div class=" mt-4">
+              
+  {% if request.user.is_superuser or request.user.role == "manager" %}
+      {%if order_items.status == 'PENDING'%}
+          <form method="post"
+                action="{% url 'order-confirm' order_items.id %}"
+                class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn fw-semibold me-2" style=" color:#4339f2; border:1px solid #4339f2"> Confirm Order</button>
+          </form>
+      {% endif %}
+  {% endif %}
+</div>
 <div class="my-4">
     <div class="card orders-card" style="overflow: auto">
       <div class="d-flex justify-content-between gap-5 align-items-center">
@@ -38,26 +33,28 @@
               aria-describedby="basic-addon1" />
           </div>
     <div>
-     <a href="{% url 'order_add_item' order_items.id %}"><button class="btn btn-view-all fw-semibold me-2" style="background-color: #4339f2; color:white"> + Add An Item</button></a> 
-      <button class="btn btn-view-all me-2">View All</button>
+      {%if order_items.status == 'PENDING'%}
+      <a href="{% url 'order_add_item' order_items.id %}"><button class="btn btn-view-all fw-semibold me-2" style="background-color: #4339f2; color:white"> + Add An Item</button></a> 
+      {% endif %}
+      <a class="btn btn-view-all me-2 text-decoration-none" href="{% url 'orders' %}">View All</a>
     </div>
       </div>
       <table class="table align-middle mt-3">
         <thead>
           <tr>
-            <th></th>
             <th>Order ID</th>
             <th> Product</th>
             <th>quantity</th>
             <th>Stock</th>
             <th>Created By</th>
+            {% if order_items.status == 'PENDING' %}
             <th>Action</th>
+            {% endif %}
           </tr>
         </thead>
         {% for item in order_items.items.all %}
         <tbody>
           <tr>
-            <td><input type="checkbox" /></td>
             <td>
               #{{ item.product.name }}
             </td>
@@ -65,35 +62,55 @@
             <td>{{ item.product }}</td>
             <td>{{ item.quantity }}</td>
             <td>{{ item.created_by_user }}</td>
-            <td class="action-icons">
-           <i class="fas fa-eye text-primary"></i>
+           
+              {% if order_items.status == 'PENDING' %}
+              <td class="action-icons">
               <i class="fas fa-edit text-success"></i>
               <i class="fas fa-trash text-danger"></i>
-            </td>
+              </td>
+              {% endif%}
+            
           </tr>
           {% empty %}
                 
                     <td colspan="10" class="p-4 text-center">No orders found.</td>
                 
             {% endfor %}
-            <div class="shipment-actions mt-4">
-              {% if order_items.status == 'PENDING' %}
-                  <a href="{% url 'order_add_item' order_items.id %}"
-                     class="btn btn-primary">➕ Add Item</a>
-                  <a href=""
-                     class="btn btn-primary">Update Shipment</a>
-              {% endif %}
-              {% if request.user.is_superuser or request.user.role == "manager" %}
-                  {%if order_items.status == 'PENDING'%}
-                      <form method="post"
-                            action="{% url 'order-confirm' order_items.id %}"
-                            class="d-inline">
-                          {% csrf_token %}
-                          <p> {{order_items.status}}</p>
-                          <button type="submit" class="btn btn-success">✅ Confirm Shipment</button>
-                      </form>
-                  {% endif %}
-              {% endif %}
-          </div>
+           
+          
             
+            {% if is_paginated %}
+            <nav class="pagin">
+              <span>{{page_obj.object_list.count }} items are shown</span>
+              <span class="float-end">
+              <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a  href="?page=1">first</a>
+                </li>
+                <li class="page-item">
+                  <a href="?page={{ page_obj.previous_page_number }}" 
+                    >⬅</a
+                  >
+                </li>
+                {% endif %}
+                <li class="page-item ">
+                  <span  style="background-color: #4339f2; color:white; border-radius: 4px; padding-left: 10px; padding-right: 10px;"
+                    >{{ page_obj.number }}</span
+                  >
+                </li>
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a href="?page={{ page_obj.next_page_number }}"
+                    >➡</a
+                  >
+                </li>
+                <li class="page-item">
+                  <a href="?page={{ paginator.num_pages }}">last</a>
+                </li>
+                {% endif %}
+              </ul>
+            </nav>
+          </span>
+            {% endif %}
 {% endblock %}
