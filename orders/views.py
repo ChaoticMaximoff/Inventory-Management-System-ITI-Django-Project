@@ -65,12 +65,12 @@ class OrderCreateItemView(LoginRequiredMixin, View):
     
     def post(self, request, pk):
         order = get_object_or_404(Order, id=pk)
-        form = (request.POST)
+        form = OrderItemForm(request.POST)
         if form.is_valid():
             item = form.save(commit=False)
             item.created_by_user = request.user
             item.save()
-            return redirect("order-items", pk=Order.id)
+            return redirect("order_items", pk=order.id)
         return render(request, "order/order_item_form.html", {"form":form, "order":order})
     
     def get_context_data(self, **kwargs):
