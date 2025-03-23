@@ -1,9 +1,8 @@
 {% extends "base.html" %}
-
-{% load static %} 
+{% load static %}
 
 {% block extra_head %}
-    <title>Create Product</title>
+    <title>Update Product</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style/style.css' %}">
 {% endblock %}
@@ -14,7 +13,7 @@
         <div class="col-lg-6 col-md-8 col-sm-12">
             <div class="card shadow-lg">
                 <div class="card-header bg-warning text-white text-center">
-                    <h2>Create a New Product</h2>
+                    <h2>Update Product</h2>
                 </div>
                 <div class="card-body">
                     {% if form.errors %}
@@ -25,7 +24,7 @@
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form.as_p }}
-                        <button type="submit" class="btn button w-100 mt-3">Save</button>
+                        <button type="submit" class="btn button w-100 mt-3">Update Product</button>
                     </form>
                 </div>
                 <div class="card-footer text-center">
