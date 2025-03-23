@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="mb-3">
+        {% if factory %}Edit{% else %}Create{% endif %} Factory
+      </h2>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">{{ form.as_p }}</div>
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{% url 'factory_list' %}" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

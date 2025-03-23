@@ -4,12 +4,12 @@
     <div class="card-body text-center">
       <h2 class="mb-3 text-danger">Confirm Deletion</h2>
       <p>
-        Are you sure you want to delete <strong>{{ shipment.name }}</strong>?
+        Are you sure you want to delete <strong>{{ factory.name }}</strong>?
       </p>
       <form method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">Confirm</button>
-        <a href="{% url 'shipment_list' %}" class="btn btn-secondary">Cancel</a>
+        <a href="{% url 'factory_list' %}" class="btn btn-secondary">Cancel</a>
       </form>
     </div>
   </div>

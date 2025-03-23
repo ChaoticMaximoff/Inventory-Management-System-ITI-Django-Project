@@ -1,38 +1,64 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView
 from .models import Product
+from django.contrib.auth.decorators import login_required
 from .forms import ProductForm
+from django.contrib import messages
 
 # Create your views here.
-class ProductListView(ListView):
-    model = Product
-    template_name = 'product_list.html'
-    context_object_name = 'products'
-
-    def get_queryset(self):
-        query = self.request.GET.get('q')
-        if query:
-            return Product.objects.filter(name__icontains=query)
-        return Product.objects.all()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['query'] = self.request.GET.get('q', '')
-        return context
-
-class CreateProductView(CreateView):
-    model = Product
-    form_class = ProductForm
-    template_name = 'product_create.html'
-    success_url = reverse_lazy('inventory:product_list')
-
-    def form_valid(self, form):
-        self.object = form.save()
-        return super().form_valid(form)
+@login_required
+def product_list(request):
+    query = request.GET.get('q')
+    if query:
+        products = Product.objects.filter(name__icontains=query)
+    else:
+        products = Product.objects.all()
     
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        if self.request.method == 'POST':
-            kwargs['files'] = self.request.FILES
-        return kwargs
+    context = {
+        'products': products,
+        'query': query or ''
+    }
+    return render(request, 'product_list.html', context)
+
+@login_required
+def create_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('inventory:product_list')
+    else:
+        form = ProductForm()
+    
+    context = {
+        'form': form
+    }
+    return render(request, 'product_create.html', context)
+
+
+@login_required
+def product_update(request, pk):
+    product = get_object_or_404(Product, id=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('inventory:product_list')
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'product_update.html', {'product': product, 'form': form})
+
+@login_required	
+def product_delete(request, pk):
+    product = get_object_or_404(Product, id=pk)
+    related_shipments = product.shipment_items.all()
+    related_orders = product.order_items.all()
+    
+    if request.method == 'POST':
+        if related_shipments or related_orders:
+            messages.add_message(request, messages.ERROR, f'This product is related to a shipment or an order. Delete them first to be able to delete this product.')
+            return redirect('inventory:product_list')
+        
+        product.delete()
+        return redirect('inventory:product_list')
+    return render(request, 'product_delete.html', {'product': product})

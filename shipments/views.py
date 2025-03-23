@@ -7,6 +7,8 @@ from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 from shipments.models import Shipment, ShipmentItem
 from shipments.forms import ShipmentForm, ShipmentItemForm
 from django.core.paginator import Paginator
+import sweetify
+from .filters import ShipmentFilter
 
 
 class RoleRequiredMixin(UserPassesTestMixin):
@@ -37,11 +39,17 @@ class ShipmentListView(LoginRequiredMixin, ListView):
     model = Shipment
     template_name = "shipments/shipment_list.html"
     context_object_name = "shipments"
-    ordering = ["-created_at"]
-    paginate_by = 2
+    paginate_by = 8
 
     def get_queryset(self):
-        return Shipment.objects.select_related("factory", "created_by")
+        queryset = Shipment.objects.order_by("confirmed")
+        self.filterset = ShipmentFilter(self.request.GET, queryset=queryset)
+        return self.filterset.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["filter"] = self.filterset
+        return context
 
 
 class ShipmentDetailView(LoginRequiredMixin, DetailView):
@@ -54,7 +62,7 @@ class ShipmentDetailView(LoginRequiredMixin, DetailView):
         shipment = self.get_object()
 
         # Paginate shipment items
-        items_per_page = 2
+        items_per_page = 8
         paginator = Paginator(shipment.items.all(), items_per_page)
         page_number = self.request.GET.get("page")
         page_obj = paginator.get_page(page_number)
@@ -70,7 +78,9 @@ class ShipmentCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
 
     def get(self, request):
         form = ShipmentForm()
-        return render(request, "shipments/shipment_form.html", {"form": form})
+        return render(
+            request, "shipments/shipment_form.html", {"form": form, "mode": "create"}
+        )
 
     def post(self, request):
         form = ShipmentForm(request.POST)
@@ -79,9 +89,20 @@ class ShipmentCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
             shipment.confirmed = False
             shipment.created_by = request.user
             shipment.save()
-            messages.success(request, "Shipment created successfully!")
+            sweetify.success(
+                request,
+                title="Success",
+                icon="success",
+                text="Shipment created successfully",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
             return redirect("shipment_list")
-        return render(request, "shipments/shipment_form.html", {"form": form})
+        return render(
+            request, "shipments/shipment_form.html", {"form": form, "mode": "create"}
+        )
 
 
 class ShipmentItemCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
@@ -104,8 +125,19 @@ class ShipmentItemCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
             shipment_item.shipment = shipment
             shipment_item.created_by = request.user
             shipment_item.save()
-            messages.success(request, "Item added to shipment!")
+
+            sweetify.success(
+                request,
+                title="Success",
+                icon="success",
+                text="Item added to shipment successfully",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
             return redirect("shipment_detail", pk=shipment.id)
+
         return render(
             request,
             "shipments/shipment_item_form.html",
@@ -120,55 +152,173 @@ class ShipmentConfirmView(LoginRequiredMixin, RoleRequiredMixin, View):
         shipment = get_object_or_404(Shipment, id=shipment_id, confirmed=False)
 
         if not shipment.items.exists():
-            messages.error(request, "Cannot confirm an empty shipment.")
+            sweetify.error(
+                request,
+                title="Cannot confirm shipment",
+                icon="error",
+                text="Cannot confirm an empty shipment",
+                timer=2000,
+                showConfirmButton=True,
+            )
             return redirect("shipment_detail", pk=shipment.id)
 
-        for item in shipment.items.all():
-            product = item.product
-            product.quantity += item.quantity
-            product.save()
+        try:
+            for item in shipment.items.all():
+                product = item.product
+                product.quantity += item.quantity
+                product.save()
 
-        shipment.confirmed = True
-        shipment.save()
-        messages.success(request, "Shipment confirmed! Stock updated.")
+            shipment.confirmed = True
+            shipment.save()
+
+            sweetify.success(
+                request,
+                title="Success",
+                icon="success",
+                text="Shipment confirmed and stock updated",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
+        except Exception as e:
+            sweetify.error(
+                request,
+                title="Error confirming shipment",
+                icon="error",
+                text=str(e),
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
+
         return redirect("shipment_detail", pk=shipment.id)
 
 
 class ShipmentUpdateView(LoginRequiredMixin, UpdateView):
     model = Shipment
     form_class = ShipmentForm
-    template_name = 'shipments/shipment_update_form.html'
-    success_url = reverse_lazy('shipment_list')
-    
+    template_name = "shipments/shipment_form.html"
+    success_url = reverse_lazy("shipment_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add mode to context to differentiate between create and update
+        context["mode"] = "update"
+        return context
+
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        
+
         if self.object.confirmed:
-            messages.error(request, "Cannot update shipment. Shipment is already confirmed.")
-            return redirect('shipment_detail', pk=self.object.pk)
-            
+            sweetify.error(
+                request,
+                title="Cannot update shipment",
+                icon="error",
+                text="Shipment is already confirmed",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
+            return redirect("shipment_detail", pk=self.object.pk)
+
         return super().dispatch(request, *args, **kwargs)
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        sweetify.success(
+            self.request,
+            title="Success",
+            icon="success",
+            text="Shipment updated successfully",
+            timer=2000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
+        return response
 
-class ShipmentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    def test_func(self):
-        return self.request.user.role == "employee"
-    
+
+class ShipmentDeleteView(LoginRequiredMixin, DeleteView):
     model = Shipment
-    template_name = "shipments/shipment_confirm_delete.html"
     success_url = reverse_lazy("shipment_list")
+
+    def post(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+            if self.object.confirmed:
+                sweetify.error(
+                    request,
+                    title="Cannot delete shipment",
+                    icon="error",
+                    text="Shipment is already confirmed",
+                    timer=2000,
+                    position="top-end",
+                    toast=True,
+                    showConfirmButton=False,
+                )
+                return redirect("shipment_list")
+
+            self.object.delete()
+            sweetify.success(
+                request,
+                title="Success",
+                icon="success",
+                text="Shipment deleted successfully",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
+            return redirect("shipment_list")
+        except Exception as e:
+            sweetify.error(
+                request,
+                title="Error",
+                icon="error",
+                text=str(e),
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
+            return redirect("shipment_list")
 
 
 class ShipmentItemDeleteView(LoginRequiredMixin, DeleteView):
     model = ShipmentItem
-    # template_name = "shipments/shipment_item_confirm_delete.html"
-    success_url = reverse_lazy("shipment_list")
 
-    def dispatch(self, request, *args, **kwargs):
+    def get_success_url(self):
+        return reverse_lazy("shipment_detail", kwargs={"pk": self.object.shipment.pk})
+
+    def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        
-        if self.object.shipment.confirmed:
-            messages.error(request, "Cannot update shipment. Shipment is already confirmed.")
-            return redirect('shipment_detail', pk=self.object.shipment.pk)
-            
-        return super().dispatch(request, *args, **kwargs)
+        shipment = self.object.shipment
+
+        if shipment.confirmed:
+            sweetify.error(
+                request,
+                title="Cannot delete item",
+                icon="error",
+                text="Cannot delete from confirmed shipment",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
+            return redirect("shipment_detail", pk=shipment.pk)
+
+        self.object.delete()
+        sweetify.success(
+            request,
+            title="Success",
+            icon="success",
+            text="Item removed successfully",
+            timer=2000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
+        return redirect("shipment_detail", pk=shipment.pk)

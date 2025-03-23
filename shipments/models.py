@@ -1,15 +1,8 @@
 from django.db import models
 from django.forms import ValidationError
+from factories.models import Factory
 from inventory.models import Product
 from django.conf import settings
-
-
-class Factory(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    location = models.CharField(max_length=255, blank=True, null=True)
-
-    def __str__(self):
-        return self.name
 
 
 class Shipment(models.Model):
@@ -35,7 +28,7 @@ class ShipmentItem(models.Model):
     shipment = models.ForeignKey(
         Shipment, on_delete=models.CASCADE, related_name="items"
     )
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="shipment_items")
     quantity = models.PositiveIntegerField()
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
