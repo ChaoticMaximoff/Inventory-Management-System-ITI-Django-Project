@@ -13,6 +13,9 @@ from django.db.models import Count, Sum, Q, F, OuterRef, Subquery
 from orders.models import Order, OrderItem, OrderItem, Supermarket
 from shipments.models import Shipment
 import sweetify
+from datetime import timedelta
+from django.utils import timezone
+from django.db.models.functions import TruncDate  # Import TruncDate
 
 class LoginView(generic.View):
     form_class = LoginForm
@@ -89,8 +92,7 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
         context = super().get_context_data(**kwargs)
 
         # Fetch products with annotated order item count (for other parts of the dashboard)
-        products = Product.objects.annotate(order_item_count=Count('orderitem'))
-        
+        products = Product.objects.annotate(order_item_count=Count('order_items'))        
         # Fetch low-stock products (quantity < critical_level)
         low_stock_products = Product.objects.filter(
             quantity__lt=F('critical_level')
@@ -109,7 +111,6 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
         # Fetch order items with related data for the other table
         order_items = OrderItem.objects.select_related('product', 'order', 'created_by_user', 'order__supermarket')
         
-        # Total order items
         total_order_items = order_items.count()
         
         # Total Products
@@ -134,6 +135,63 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
             order_count=Count('id')
         )
 
+
+
+
+
+
+
+# --- Sales & Purchase Data (Last 7 Days) ---
+        today = timezone.now().date()
+        week_start = today - timedelta(days=6)  # Last 7 days
+        days = [week_start + timedelta(days=i) for i in range(7)]
+        labels = [day.strftime('%a') for day in days]  # e.g., Mon, Tue, etc.
+
+        # Sales: Total quantity ordered per day (confirmed orders)
+        sales_data = (
+            OrderItem.objects.filter(
+                order__status='CONFIRMED',
+                order__created_at__gte=week_start,  # Direct DateTimeField comparison
+                order__created_at__lte=today + timedelta(days=1)  # Include all of today
+            )
+            .annotate(day=TruncDate('order__created_at'))
+            .values('day')
+            .annotate(total_quantity=Sum('quantity'))
+            .order_by('day')
+        )
+        sales_dict = {entry['day']: entry['total_quantity'] for entry in sales_data}
+        sales = [sales_dict.get(day, 0) for day in days]
+
+        # Purchases: Total quantity ordered per day (pending orders)
+        purchase_data = (
+            OrderItem.objects.filter(
+                order__status='PENDING',
+                order__created_at__gte=week_start,  # Direct DateTimeField comparison
+                order__created_at__lte=today + timedelta(days=1)  # Include all of today
+            )
+            .annotate(day=TruncDate('order__created_at'))
+            .values('day')
+            .annotate(total_quantity=Sum('quantity'))
+            .order_by('day')
+        )
+        purchase_dict = {entry['day']: entry['total_quantity'] for entry in purchase_data}
+        purchases = [purchase_dict.get(day, 0) for day in days]
+
+        # --- Stock Chart Data ---
+        quantity_in_hand = Product.objects.aggregate(total=Sum('quantity'))['total'] or 0
+        to_be_received = (
+            OrderItem.objects.filter(order__status='PENDING')
+            .aggregate(total=Sum('quantity'))['total'] or 0
+        )
+
+
+
+
+
+
+
+
+
         # Populate context
         context['products'] = products
         context['total_products'] = total_products
@@ -149,4 +207,22 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
         context['supermarket_order_counts'] = supermarket_order_counts
         context['supermarkets'] = Supermarket.objects.all()
         
+
+
+# From your DashboardView
+        context['chart_labels'] = labels  # e.g., ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        context['sales_data'] = sales  # e.g., [0, 0, 10, 0, 0, 0, 0]
+        context['purchase_data'] = purchases  # e.g., [0, 0, 5, 0, 0, 0, 0]
+        context['quantity_in_hand'] = quantity_in_hand
+        context['to_be_received'] = to_be_received
+
+        # For the table
+        print("Chart Labels:", labels)
+        print("Sales Data:", sales)
+        print("Purchase Data:", purchases)
+
+
+
+
+
         return context

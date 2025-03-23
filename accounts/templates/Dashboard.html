@@ -288,7 +288,7 @@
   <div class="card orders-card" style="overflow: auto">
     <div class="d-flex justify-content-between align-items-center">
       <h5 class="fw-bold">Recent Orders</h5>
-      <button class="btn btn-view-all">View All</button>
+      <a href="{% url 'orders' %}" class="btn btn-view-all">View All</a>
     </div>
     <table class="table align-middle mt-3">
       <thead>
@@ -321,7 +321,9 @@
             </span>
           </td>
           <td class="action-icons">
-            <i class="fas fa-eye text-primary"></i>
+            <a href="{% url 'order_items' item.order.id %}">
+              <i class="fas fa-eye text-primary"></i>
+            </a>
             <i class="fas fa-edit text-success"></i>
             <i class="fas fa-trash text-danger"></i>
           </td>
@@ -392,18 +394,18 @@
                     transform: translate(-50%, -50%);
                     color: rgba(67, 57, 242, 0.8);
                   ">
-                  90%
+                  {{ quantity_in_hand|add:to_be_received|floatformat:0 }} Total
                 </h5>
               </div>
             </div>
           </div>
           <div class="d-flex justify-content-center pb-3">
             <div class="me-3">
-              <h3 class="mt-3 pro fw-bold">1,500</h3>
+              <h3 class="mt-3 pro fw-bold">{{ quantity_in_hand }}</h3>
               <p class="text-muted">Quantity in hand</p>
             </div>
             <div class="ms-3">
-              <h3 class="mt-3 pro fw-bold">500</h3>
+              <h3 class="mt-3 pro fw-bold">{{ to_be_received }}</h3>
               <p class="text-muted">To be received</p>
             </div>
           </div>
@@ -425,60 +427,81 @@
     Go to Home
   </a>
 </div>
-{% endif %}
-<script>
-  const ctx = document.getElementById("salesChart").getContext("2d");
-  const salesChart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      datasets: [
-        {
-          label: "Sales",
-          data: [9000, 7000, 4000, 6000, 9000, 7000, 6000],
-          backgroundColor: "rgba(67, 57, 242, 0.8)",
-          borderRadius: 5
-        },
-        {
-          label: "Purchases",
-          data: [5000, 11000, 6000, 8000, 4000, 7000, 8000],
-          backgroundColor: "rgba(142, 36, 170, 0.8)",
-          borderRadius: 5
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
+{% endif %} {{ chart_labels|json_script:"chart-labels" }}
+{{sales_data|json_script:"sales-data" }}
+{{purchase_data|json_script:"purchase-data" }}
 
-  var cts = document.getElementById("stockChart").getContext("2d");
-  new Chart(cts, {
-    type: "doughnut",
-    data: {
-      labels: ["In Stock", "To be Received"],
-      datasets: [
-        {
-          data: [1500, 500],
-          backgroundColor: ["rgba(67, 57, 242, 0.8)", "#d1d5db"],
-          borderWidth: 0
+<script>
+  window.onload = function() {
+    try {
+      // Access and parse the JSON data
+      const chartLabels = JSON.parse(document.getElementById("chart-labels").textContent);
+      const salesData = JSON.parse(document.getElementById("sales-data").textContent);
+      const purchaseData = JSON.parse(document.getElementById("purchase-data").textContent);
+
+      // Log for debugging
+      console.log("Chart Labels:", chartLabels);
+      console.log("Sales Data:", salesData);
+      console.log("Purchase Data:", purchaseData);
+
+      // Sales & Purchase Chart
+      const ctx = document.getElementById("salesChart").getContext("2d");
+      const salesChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: chartLabels,
+          datasets: [
+            {
+              label: "Sales",
+              data: salesData,
+              backgroundColor: "rgba(67, 57, 242, 0.8)",
+              borderRadius: 5
+            },
+            {
+              label: "Purchases",
+              data: purchaseData,
+              backgroundColor: "rgba(142, 36, 170, 0.8)",
+              borderRadius: 5
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
         }
-      ]
-    },
-    options: {
-      responsive: true,
-      cutout: "75%",
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false }
-      }
+      });
+
+      // Stock Chart
+      const cts = document.getElementById("stockChart").getContext("2d");
+      new Chart(cts, {
+        type: "doughnut",
+        data: {
+          labels: ["In Stock", "To be Received"],
+          datasets: [
+            {
+              data: [{{ quantity_in_hand }}, {{ to_be_received }}],
+              backgroundColor: ["rgba(67, 57, 242, 0.8)", "#d1d5db"],
+              borderWidth: 0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          cutout: "75%",
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false }
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error rendering charts:", error);
     }
-  });
+  };
 </script>
 
 {% endblock %}
