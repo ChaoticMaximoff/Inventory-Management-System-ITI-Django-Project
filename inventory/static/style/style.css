@@ -90,3 +90,27 @@ form input[type="number"]:focus {
     box-shadow: 0 0 8px rgba(111, 66, 193, 0.2);
     outline: none;
 }
+
+/* pagination */
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color); 
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+.pagination .page-link {
+    color: var(--secondary-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: var(--primary-color); /* Fixed syntax */
+    color: white;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
