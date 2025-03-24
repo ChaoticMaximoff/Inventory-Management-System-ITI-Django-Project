@@ -40,10 +40,17 @@
   </a>
 
   <a
-    class="nav-link {% if 'users' in request.path %}active{% endif %}"
-    href="#"
+    class="nav-link {% if 'factories' in request.path %}active{% endif %}"
+    href="{% url 'factory_list' %}"
   >
-    <i class="fas fa-user"></i> Users
+    <i class="fas fa-industry"></i> Factories
+  </a>
+
+  <a
+    class="nav-link {% if 'supermarkets' in request.path %}active{% endif %}"
+    href="{% url 'supermarket_list' %}"
+  >
+    <i class="fas fa-store"></i> Supermarkets
   </a>
 
   <hr />
@@ -52,12 +59,14 @@
   <form
     method="post"
     action="{% url 'accounts:logout' %}"
-    class="d-inline from">
+    class="d-inline from"
+  >
     {% csrf_token %}
     <button
       type="submit"
       class="nav-link"
-      style="background-color: transparent; border: none; color: #fff">
+      style="background-color: transparent; border: none; color: #fff"
+    >
       <i class="fas fa-sign-out-alt"></i> Logout
     </button>
   </form>
