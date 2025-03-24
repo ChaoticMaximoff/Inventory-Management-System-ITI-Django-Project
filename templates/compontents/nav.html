@@ -7,7 +7,7 @@
     <div class="d-flex align-items-center">
       <div class="dropdown">
         <a
-          class="profile dropdown-toggle text-dark btn"
+          class="profile text-dark btn"
           href="#"
           role="button"
           id="userDropdown"
@@ -15,9 +15,11 @@
           aria-expanded="false"
           aria-label="User menu for {{ user.username }}"
         >
-          <span class="d-flex align-items-center gap-2 text-start">
+          <span
+            class="d-flex align-items-center gap-2 text-start text-capitalize"
+          >
             {{ user.username }}<br />
-            <small class="text-muted">{{ user.role }}</small>
+            <small class="text-muted">({{ user.role }})</small>
             <i class="fa-solid fa-caret-down"></i>
           </span>
         </a>
