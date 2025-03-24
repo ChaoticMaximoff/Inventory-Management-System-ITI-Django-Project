@@ -46,14 +46,7 @@
               style="width: 60%; background-color: var(--color-blue)">
               Login
             </button>
-            <p class="text-center mt-3">
-              Didn't have an account?
-              <a
-                style="color: var(--color-blue)"
-                href="{% url 'accounts:register' %}"
-                >Register</a
-              >
-            </p>
+
             {% if form.non_field_errors %}
             <script>
               document.addEventListener("DOMContentLoaded", function () {
@@ -88,7 +81,11 @@
           timer: 1000,
           timerProgressBar: true
         }).then(() => {
-          window.location.href = "{% url 'accounts:index' %}";
+          {%if user.is_authenticated and user.role == "manager"%}
+          window.location.href = "{% url 'accounts:dashboard' %}";
+          {%else %}
+          window.location.href = "{% url 'inventory:product_list' %}";
+          {%endif %}
         });
       });
     </script>

@@ -3,24 +3,8 @@
 <nav class="navbar navbar-expand-lg navbar-custom">
   <div class="container-fluid">
     <a class="navbar-brand" href="#"> {% get_section_name request.path %} </a>
-    <div class="d-flex mx-auto" style="max-width: 300px">
-      <div class="input-group">
-        <button class="input-group-text" id="basic-addon1">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Search"
-          aria-label="Search"
-          aria-describedby="basic-addon1"
-        />
-      </div>
-    </div>
+
     <div class="d-flex align-items-center">
-      <button class="btn bell-btn btn-link text-dark me-3">
-        <i style="font-size: 25px" class="fa-regular fa-bell"></i>
-      </button>
       <div class="dropdown">
         <a
           class="profile dropdown-toggle text-dark btn"
@@ -29,31 +13,34 @@
           id="userDropdown"
           data-bs-toggle="dropdown"
           aria-expanded="false"
-          aria-label="User menu for Belal, Manager"
+          aria-label="User menu for {{ user.username }}"
         >
           <span class="d-flex align-items-center gap-2 text-start">
-            <img
-              src="{% static 'images/admin.jpg' %}"
-              alt="User"
-              class="rounded-circle me-2"
-              style="width: 30px; height: 30px"
-            />
-            <span style="font-size: 16px">
-              Belal<br />
-              <small class="text-muted">Manager</small>
-            </span>
+            {{ user.username }}<br />
+            <small class="text-muted">{{ user.role }}</small>
             <i class="fa-solid fa-caret-down"></i>
           </span>
         </a>
-
         <ul
           class="dropdown-menu dropdown-menu-end"
           aria-labelledby="userDropdown"
         >
-          <li><a class="dropdown-item" href="#">Profile</a></li>
-          <li><a class="dropdown-item" href="#">Settings</a></li>
-          <li><hr class="dropdown-divider" /></li>
-          <li><a class="dropdown-item" href="#">Logout</a></li>
+          {% if user.is_authenticated %}
+          <li>
+            <form
+              method="post"
+              action="{% url 'accounts:logout' %}"
+              class="d-inline"
+            >
+              {% csrf_token %}
+              <button type="submit" class="dropdown-item">Logout</button>
+            </form>
+          </li>
+          {% else %}
+          <li>
+            <a class="dropdown-item" href="{% url 'accounts:login' %}">Login</a>
+          </li>
+          {% endif %}
         </ul>
       </div>
     </div>
