@@ -17,8 +17,8 @@ class ShipmentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["factory"].widget.attrs.update({"class": "form-select w-25"})
-        self.fields["receive_date"].widget.attrs.update({"class": "form-select"})
+        self.fields["factory"].widget.attrs.update({"class": "form-select"})
+        self.fields["receive_date"].widget.attrs.update({"class": "form-control"})
 
 
 class ShipmentItemForm(forms.ModelForm):

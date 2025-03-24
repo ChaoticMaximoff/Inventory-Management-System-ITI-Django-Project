@@ -1,24 +1,27 @@
 {% extends 'base.html' %} {% block content %}
-<h1>Create Order</h1>
-<div class="my-4">
-  <div class="card orders-card" style="overflow: auto">
-    <div class="d-flex justify-content-between gap-5 align-items-center">
-      <form method="post" class="align-middle mt-3 p-4">
+<h1 class="text-capitalize">{{mode}} Order</h1>
+<div class="my-4 d-flex flex-column align-items-center justify-content-center">
+  <div class="card orders-card" style="overflow: auto; min-width: 600px;" >
+    <div class="d-flex justify-content-center gap-5 align-items-center">
+      <form method="post" class="d-flex flex-column gap-4 p-4">
         {% csrf_token %}
-        <div class="mb-3">
-          <label class="form-label">Supermarket: </label>
-          {{ form.supermarket }}
+        <div class="d-flex gap-4 align-items-center">
+          <label class="form-label fw-bold">Supermarket: </label>
+          <div>{{ form.supermarket }}</div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Receive Date: </label>
-          {{ form.receive_date }}
+        <div class="d-flex gap-4 align-items-center">
+          <label class="form-label fw-bold">Receive Date: </label>
+          <div>{{ form.receive_date }}</div>
         </div>
-        <a
-          href="{% url 'orders' %}"
-          class="btn text-decoration-none border px-4"
-          >Cancel</a
-        >
-        <button type="submit" class="btn m-5 button-1st">Create Order</button>
+        <div class="d-flex align-items-center justify-content-center gap-2">
+          <a
+            href="{% url 'orders' %}"
+            class="btn btn-view-all fw-semibold me-2"
+            >Cancel</a
+          >
+          <button type="submit" class="btn btn-view-all fw-semibold me-2 text-capitalize"
+          style="background-color: #4339f2; color: white">{{mode}} Order</button>
+        </div>
       </form>
     </div>
   </div>

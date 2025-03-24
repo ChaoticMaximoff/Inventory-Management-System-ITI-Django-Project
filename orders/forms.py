@@ -18,8 +18,8 @@ class OrdersForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Add Bootstrap class to the supermarket dropdown
-        self.fields["supermarket"].widget.attrs.update({"class": "form-select w-50"})
-        self.fields["receive_date"].widget.attrs.update({"class": "form-control w-50"})
+        self.fields["supermarket"].widget.attrs.update({"class": "form-select"})
+        self.fields["receive_date"].widget.attrs.update({"class": "form-control"})
 
 
 class OrderItemForm(forms.ModelForm):
@@ -29,11 +29,11 @@ class OrderItemForm(forms.ModelForm):
 
     def clean_quantity(self):
         quantity = self.cleaned_data.get("quantity")
-        if quantity <= 0:
-            raise forms.ValidationError("Quantity must be greater than zero.")
+        if quantity <= 5:
+            raise forms.ValidationError("Quantity must be greater than 5.")
         return quantity
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["product"].widget.attrs.update({"class": "form-select w-25"})
+        self.fields["product"].widget.attrs.update({"class": "form-select"})
         self.fields["quantity"].widget.attrs.update({"class": "form-control"})

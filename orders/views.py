@@ -181,6 +181,18 @@ class OrderCreateItemView(LoginRequiredMixin, View):
 
             return redirect("order_items", pk=order.id)
 
+        error_message = form.errors.as_text()
+
+        sweetify.error(
+            request,
+            title="Error",
+            icon="error",
+            text=f"Failed to add item to order: {error_message}",
+            timer=2000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
         return render(
             request, "orders/order_item_form.html", {"form": form, "order": order}
         )
