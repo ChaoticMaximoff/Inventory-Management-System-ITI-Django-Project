@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 import sweetify
 from factories.models import Factory
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 
 
 class FactoryListView(LoginRequiredMixin, ListView):
@@ -22,6 +23,14 @@ class FactoryListView(LoginRequiredMixin, ListView):
 class FactoryDetailView(LoginRequiredMixin, DetailView):
     model = Factory
     template_name = "factories/factory_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shipments = self.object.shipments.all()
+        paginator = Paginator(shipments, 5)  # Show 5 shipments per page
+        page = self.request.GET.get("page")
+        context["shipments"] = paginator.get_page(page)
+        return context
 
 
 class FactoryCreateView(LoginRequiredMixin, CreateView):
@@ -42,6 +51,7 @@ class FactoryDeleteView(LoginRequiredMixin, DeleteView):
     model = Factory
     template_name = "factories/factory_confirm_delete.html"
     success_url = reverse_lazy("factory_list")
+
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
         if self.object.shipments.exists():
