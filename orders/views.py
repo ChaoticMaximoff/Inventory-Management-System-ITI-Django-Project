@@ -139,7 +139,10 @@ class OrderCreateItemView(LoginRequiredMixin, View):
 
         form = OrderItemForm(request.POST)
         if form.is_valid():
-            if form.cleaned_data["quantity"] > form.cleaned_data["product"].quantity:
+            product = form.cleaned_data["product"]
+            quantity = form.cleaned_data["quantity"]
+
+            if quantity > product.quantity:
                 sweetify.error(
                     request,
                     title="Cannot add item",
@@ -155,17 +158,32 @@ class OrderCreateItemView(LoginRequiredMixin, View):
                     "orders/order_item_form.html",
                     {"form": form, "order": order},
                 )
+
+            # Decrease the stock of the product
+            product.quantity -= quantity
+            product.save()
+
             item = form.save(commit=False)
             item.created_by_user = request.user
             item.order = order
             item.save()
+
+            sweetify.success(
+                request,
+                title="Item added",
+                icon="success",
+                text="Item has been added to the order successfully.",
+                timer=2000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
+
             return redirect("order_items", pk=order.id)
+
         return render(
             request, "orders/order_item_form.html", {"form": form, "order": order}
         )
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(**kwargs)
 
 
 class OrderConfirmView(LoginRequiredMixin, View):
@@ -328,8 +346,12 @@ class OrderItemDeleteView(LoginRequiredMixin, DeleteView):
                 toast=True,
                 showConfirmButton=False,
             )
-
             return redirect("order_items", pk=order.pk)
+
+        # Increase the stock of the product
+        product = orderitem.product
+        product.quantity += orderitem.quantity
+        product.save()
 
         orderitem.delete()
         sweetify.success(
