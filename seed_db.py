@@ -283,6 +283,7 @@ def seed_database():
                     supermarket=supermarket,
                     created_by_user=manager,
                     status=Order.PENDING,
+                    receive_date=today - timedelta(days=random.randint(1, 30)),
                 )
 
                 # Add 4-7 random products to each order
