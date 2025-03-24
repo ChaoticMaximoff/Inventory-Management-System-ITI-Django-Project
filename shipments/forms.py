@@ -15,28 +15,24 @@ class ShipmentForm(forms.ModelForm):
             raise forms.ValidationError("Receive date cannot be in the past.")
         return receive_date
 
-    def clean_quantity(self):
-        quantity = self.cleaned_data.get("quantity")
-        if quantity <= 0:
-            raise forms.ValidationError("Quantity must be greater than zero.")
-        return quantity
-    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['factory'].widget.attrs.update({'class': 'form-select w-25'})
-        self.fields['receive_date'].widget.attrs.update({'class': 'form-select'})
-
-
+        self.fields["factory"].widget.attrs.update({"class": "form-select"})
+        self.fields["receive_date"].widget.attrs.update({"class": "form-control"})
 
 
 class ShipmentItemForm(forms.ModelForm):
     class Meta:
         model = ShipmentItem
         fields = ["product", "quantity"]
-        
+
+    def clean_quantity(self):
+        quantity = self.cleaned_data.get("quantity")
+        if quantity <= 5:
+            raise forms.ValidationError("Quantity must be greater than 5.")
+        return quantity
+
     def __init___(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['product'].widget.attrs.update({'class': 'form-select w-25'})
-        self.fields['quantity'].widget.attrs.update({'class': 'form-control'})
-
-
+        self.fields["product"].widget.attrs.update({"class": "form-select w-25"})
+        self.fields["quantity"].widget.attrs.update({"class": "form-control"})

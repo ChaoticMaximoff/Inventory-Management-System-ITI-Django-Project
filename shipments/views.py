@@ -31,7 +31,16 @@ class RoleRequiredMixin(UserPassesTestMixin):
         return user.role.upper() in [role.upper() for role in self.required_roles]
 
     def handle_no_permission(self):
-        messages.error(self.request, "You do not have permission to access this page.")
+        sweetify.error(
+            self.request,
+            title="Permission denied",
+            icon="error",
+            text="You do not have the permission to access this page.",
+            timer=3000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
         return redirect("shipment_list")
 
 
@@ -138,6 +147,19 @@ class ShipmentItemCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
             )
             return redirect("shipment_detail", pk=shipment.id)
 
+        # Capture the specific error message
+        error_message = form.errors.as_text()
+
+        sweetify.error(
+            request,
+            title="Error",
+            icon="error",
+            text=f"Failed to add item to shipment: {error_message}",
+            timer=2000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
         return render(
             request,
             "shipments/shipment_item_form.html",
