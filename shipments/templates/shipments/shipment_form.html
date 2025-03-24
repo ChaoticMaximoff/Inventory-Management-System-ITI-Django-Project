@@ -1,9 +1,33 @@
 {% extends "base.html" %} {% block title %} Create Shipment {% endblock title %}
 {% block content %}
-<h2>{{mode}} Shipment</h2>
-<form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit" class="btn btn-primary">{{mode}}</button>
-</form>
-<a href="{% url 'shipment_list' %}" class="btn btn-secondary mt-2">Back</a>
+
+<div class="my-4">
+  <div class="card orders-card" style="overflow: auto">
+    <div class="d-flex justify-content-between gap-5 align-items-center">
+      <div class="container mt-5">
+        <h2>{{mode}} Shipment</h2>
+        <form method="post">
+              {% csrf_token %}
+              <div class="m-4">
+              <label class="form-label m-2"> Factory:  </label>
+              {{ form.factory }}
+              </div>
+
+              <!-- Render the form fields -->
+               <div class="m-4">
+              <label class="form-label m-2"> Receive date:  </label>
+              <div class="w-25">{{ form.receive_date }}</div>
+              </div>
+              
+              
+              <button type="submit" class="btn m-5" style="background-color: #4339f2; color: white;">{{mode}}</button>
+              <a class="text-decoration-none btn" style="color: #4339f2; border:1px solid #4339f2;" href="{% url 'shipment_list' %}">cancel</a>
+          </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
 {% endblock content %}

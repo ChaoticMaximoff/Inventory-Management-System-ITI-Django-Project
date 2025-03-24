@@ -3,12 +3,31 @@
     Add Shipment Item
 {% endblock title %}
 {% block content %}
-    <h2>Add Item to Shipment</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Add Item</button>
-    </form>
-    <a href="{% url 'shipment_detail' shipment.id %}"
-       class="btn btn-secondary mt-2">Back</a>
+    <div class="my-4">
+        <div class="card orders-card" style="overflow: auto">
+          <div class="d-flex justify-content-between gap-5 align-items-center">
+            <div class="container mt-5">
+                <h2>Add Item to Shipment</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="m-4">
+                    <label class="form-label m-2"> Product:  </label>
+                    {{ form.product }}
+                    </div>
+    
+                    <!-- Render the form fields -->
+                     <div class="m-4">
+                    <label class="form-label m-2"> Quantity:  </label>
+                    <div class="w-25">{{ form.quantity }}</div>
+                    </div>
+                    
+                    
+                    <button type="submit" class="btn m-5" style="background-color: #4339f2; color: white;">Create Order Item</button>
+                    <a class="text-decoration-none btn" style="color: #4339f2; border:1px solid #4339f2;" href="{% url 'shipment_detail' shipment.id  %}">cancel</a>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock content %}

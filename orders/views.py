@@ -28,9 +28,17 @@ class RoleRequiredMixin(UserPassesTestMixin):
             return True
 
     def handle_no_permission(self):
-        messages.error(
-            self.request, "You do not have the permission to access this page."
+        sweetify.error(
+            self.request,
+            title="Permission denied",
+            icon="error",
+            text="You do not have the permission to access this page.",
+            timer=3000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
         )
+
         return redirect("orders")
 
 
@@ -38,6 +46,7 @@ class OrderListView(LoginRequiredMixin, ListView):
     model = Order
     template_name = "orders/order_list.html"
     context_object_name = "orders"
+    ordering = ["-created_at"]
     paginate_by = 8
 
     def get_queryset(self):
@@ -102,15 +111,32 @@ class OrderCreateItemView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
         order = get_object_or_404(Order, id=pk, status="PENDING")
+
         form = OrderItemForm(request.POST)
         if form.is_valid():
+            if form.cleaned_data["quantity"] > form.cleaned_data["product"].quantity:
+                sweetify.error(
+                    request,
+                    title="Cannot add item",
+                    icon="error",
+                    text="Quantity exceeds available stock",
+                    timer=2000,
+                    position="top-end",
+                    toast=True,
+                    showConfirmButton=False,
+                )
+                return render(
+                    request,
+                    "orders/order_item_form.html",
+                    {"form": form, "order": order},
+                )
             item = form.save(commit=False)
             item.created_by_user = request.user
             item.order = order
             item.save()
             return redirect("orders")
         return render(
-            request, "order/order_item_form.html", {"form": form, "order": order}
+            request, "orders/order_item_form.html", {"form": form, "order": order}
         )
 
     def get_context_data(self, **kwargs):
@@ -134,15 +160,18 @@ class OrderConfirmView(LoginRequiredMixin, View):
             )
             return redirect("order_items", pk=order.id)
 
-        for item in order.items.all():
-            product = item.product
-            product.quantity -= item.quantity
-            Order.created_at = Order.created_at
-            product.save()
-
         order.status = "CONFIRMED"
         order.save()
-        messages.success(request, "order confirmed! Stock updated.")
+        sweetify.success(
+            self.request,
+            title="Order confirmed",
+            icon="success",
+            text="Stock updated successfully.",
+            timer=3000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
         return redirect("order_items", pk=order.id)
 
 
