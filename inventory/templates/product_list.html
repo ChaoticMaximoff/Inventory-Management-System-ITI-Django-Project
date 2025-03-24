@@ -1,118 +1,196 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block extra_head %}
-    <title>List Product</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'style/style.css' %}">
-{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% load static %} {% block extra_head %}
+<title>List Product</title>
+<link
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" href="{% static 'style/style.css' %}" />
+{% endblock %} {% block content %}
 <div class="container py-4 bg-light">
-    <h1 class="text-center mb-4">Product List</h1>
-    
-    <form method="get" action="" class="d-flex flex-column align-items-center mb-4">
-        <div class="input-group mb-3" style="max-width: 400px;">
-            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by name">
-            <button type="submit" class="btn btn-sm" style="background-color: var(--primary-color); color: white;">Search</button>
+  <h1 class="text-center mb-4">Product List</h1>
+
+  <form
+    method="get"
+    action=""
+    class="d-flex flex-column align-items-center mb-4"
+  >
+    <div class="input-group mb-3" style="max-width: 400px">
+      <input
+        type="text"
+        name="q"
+        value="{{ query }}"
+        class="form-control"
+        placeholder="Search by name"
+      />
+      <button
+        type="submit"
+        class="btn btn-sm"
+        style="background-color: var(--primary-color); color: white"
+      >
+        Search
+      </button>
+    </div>
+  </form>
+
+  <ul class="list-group">
+    {% for product in products %}
+    <li class="list-group-item d-flex align-items-center">
+      <img
+        src="{{ product.image.url }}"
+        alt="{{ product.name }}"
+        class="img-thumbnail mr-3"
+        style="max-width: 100px; height: auto"
+      />
+      <div>
+        <strong>Name:</strong> {{ product.name }} -
+        <strong>Quantity:</strong> {{ product.quantity }}
+        <span class="badge badge-warning"
+          >Critical: {{ product.critical_level }}</span
+        >
+        {% if product.is_low_stock %}
+        <span class="badge badge-danger ml-2">Low Stock!</span>
+        {% endif %}
+      </div>
+
+      <div class="ms-auto">
+        <a
+          href="{% url 'inventory:product_update' product.id %}"
+          class="btn btn-sm mr-2"
+          style="background-color: var(--primary-color); color: white"
+          >Update</a
+        >
+        <a
+          type="button"
+          class="btn btn-sm"
+          style="background-color: var(--primary-color); color: white"
+          data-bs-toggle="modal"
+          data-bs-target="#deleteModal{{ product.id }}"
+        >
+          Delete
+        </a>
+      </div>
+    </li>
+
+    <div
+      class="modal fade"
+      id="deleteModal{{ product.id }}"
+      tabindex="-1"
+      aria-labelledby="deleteModalLabel{{ product.id }}"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div
+            class="modal-header text-white"
+            style="background-color: var(--primary-color); color: white"
+          >
+            <h5 class="modal-title" id="deleteModalLabel{{ product.id }}">
+              Confirm Delete
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>
+              Are you sure you want to delete
+              <strong>{{ product.name }}</strong> (ID: {{ product.id }})?
+            </p>
+          </div>
+          <div class="modal-footer">
+            <form
+              method="post"
+              action="{% url 'inventory:product_delete' product.id %}"
+            >
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="btn btn-danger"
+                style="background-color: var(--primary-color); color: white"
+              >
+                Yes, Delete
+              </button>
+            </form>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-    </form>
+      </div>
+    </div>
 
-    <ul class="list-group">
-        {% for product in products %}
-        <li class="list-group-item d-flex align-items-center">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-thumbnail mr-3" style="max-width: 100px; height: auto;">
-            <div>
-                <strong>Name:</strong> {{ product.name }} - 
-                <strong>Quantity:</strong> {{ product.quantity }} 
-                <span class="badge badge-warning">Critical: {{ product.critical_level }}</span>
-                {% if product.is_low_stock %}
-                    <span class="badge badge-danger ml-2">Low Stock!</span>
-                {% endif %}
-            </div>
+    {% empty %}
+    <li class="list-group-item text-center">No products found.</li>
+    {% endfor %}
+  </ul>
 
-            <div class="ms-auto">
-                <a href="{% url 'inventory:product_update' product.id %}" class="btn btn-sm mr-2" style="background-color: var(--primary-color); color: white;">Update</a>
-                <a type="button" class="btn btn-sm" style="background-color: var(--primary-color); color: white;" data-bs-toggle="modal" data-bs-target="#deleteModal{{ product.id }}">
-                    Delete
-                </a>
-            </div>
+  <!-- Pagination -->
+  <div class="d-flex justify-content-center mt-4">
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        {% if products.has_previous %}
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="?page={{ products.previous_page_number }}{% if query %}&q={{ query }}{% endif %}"
+            aria-label="Previous"
+          >
+            <span aria-hidden="true">&laquo;</span>
+          </a>
         </li>
+        {% endif %} {% for num in products.paginator.page_range %}
+        <li class="page-item {% if products.number == num %}active{% endif %}">
+          <a
+            class="page-link"
+            href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}"
+            >{{ num }}</a
+          >
+        </li>
+        {% endfor %} {% if products.has_next %}
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="?page={{ products.next_page_number }}{% if query %}&q={{ query }}{% endif %}"
+            aria-label="Next"
+          >
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
 
-
-        <div class="modal fade" id="deleteModal{{ product.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ product.id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header text-white" style="background-color: var(--primary-color); color: white;">
-                        <h5 class="modal-title" id="deleteModalLabel{{ product.id }}" >Confirm Delete</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" >
-                        <p>Are you sure you want to delete <strong>{{ product.name }}</strong> (ID: {{ product.id }})?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <form method="post" action="{% url 'inventory:product_delete' product.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger" style="background-color: var(--primary-color); color: white;">Yes, Delete</button>
-                        </form>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {% empty %}
-        <li class="list-group-item text-center">No products found.</li>
-        {% endfor %}
-    </ul>
-
-    <!-- Pagination -->
-    <div class="d-flex justify-content-center mt-4">
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-                {% if products.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ products.previous_page_number }}{% if query %}&q={{ query }}{% endif %}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-                {% for num in products.paginator.page_range %}
-                <li class="page-item {% if products.number == num %}active{% endif %}">
-                    <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
-                </li>
-                {% endfor %}
-                {% if products.has_next %}
-                <li class="page-item">
-                    <a class="page-link"  href="?page={{ products.next_page_number }}{% if query %}&q={{ query }}{% endif %}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-    </div>
-
-    <div class="text-center mt-4">
-        <a href="{% url 'inventory:product_create' %}" class="btn delete-button" style="background-color: var(--primary-color); color: white;">Add New Product</a>
-    </div>
-    {% if messages %}
-        {% for message in messages %}
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                Swal.fire({
-                title: "Deletion Error",
-                text: "{{ message }}",	
-                icon: "error",
-                toast: true,
-                position: "top",
-                showConfirmButton: false,
-                timer: 5000,
-                timerProgressBar: true
-                });
-            });
-            </script>
-        {% endfor %}
-    {% endif %}
+  <div class="text-center mt-4">
+    <a
+      href="{% url 'inventory:product_create' %}"
+      class="btn delete-button"
+      style="background-color: var(--primary-color); color: white"
+      >Add New Product</a
+    >
+  </div>
+  {% if messages %} {% for message in messages %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      Swal.fire({
+        title: "Deletion Error",
+        text: "{{ message }}",
+        icon: "error",
+        toast: true,
+        position: "top",
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+      });
+    });
+  </script>
+  {% endfor %} {% endif %}
 </div>
 {% endblock %}
