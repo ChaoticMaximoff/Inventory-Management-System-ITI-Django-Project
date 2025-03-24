@@ -11,6 +11,7 @@ import sweetify
 from supermarkets.forms import SupermarketForm
 from supermarkets.models import Supermarket
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 
 
 class SupermarketListView(LoginRequiredMixin, ListView):
@@ -24,6 +25,14 @@ class SupermarketDetailView(LoginRequiredMixin, DetailView):
     model = Supermarket
     template_name = "supermarkets/supermarket_detail.html"
     context_object_name = "supermarket"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        orders = self.object.orders.all()
+        paginator = Paginator(orders, 5)
+        page = self.request.GET.get("page")
+        context["orders"] = paginator.get_page(page)
+        return context
 
 
 class SupermarketCreateView(LoginRequiredMixin, CreateView):

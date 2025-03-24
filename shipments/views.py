@@ -109,6 +109,20 @@ class ShipmentCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
                 showConfirmButton=False,
             )
             return redirect("shipment_list")
+
+        # Capture the specific error message
+        error_message = form.errors.as_text()
+
+        sweetify.error(
+            request,
+            title="Error",
+            icon="error",
+            text=f"Failed to create shipment: {error_message}",
+            timer=2000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
         return render(
             request, "shipments/shipment_form.html", {"form": form, "mode": "create"}
         )
