@@ -16,7 +16,9 @@
           <div>{{ form.quantity }}</div>
         </div>
         <div class="d-flex align-items-center justify-content-center gap-2">
-          <a href="{% url 'orders' %}" class="btn btn-view-all fw-semibold me-2"
+          <a
+            href="{% url 'shipment_detail' pk=shipment.id %}"
+            class="btn btn-view-all fw-semibold me-2"
             >Cancel</a
           >
           <button

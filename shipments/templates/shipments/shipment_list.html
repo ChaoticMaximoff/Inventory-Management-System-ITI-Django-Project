@@ -1,5 +1,10 @@
-{% extends "base.html" %} {% load static %} {% block title %} Shipments {%
-endblock title %} {% block content %}
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+  Shipments 
+{% endblock title %}
+
+{% block content %}
 
 <!-- Filter Form -->
 <div class="card mb-3">
@@ -63,41 +68,42 @@ endblock title %} {% block content %}
       </thead>
       <tbody>
         {% for shipment in shipments %}
-        <tr>
-          <td>{{ shipment.factory.name }}</td>
-          <td>{{ shipment.receive_date }}</td>
-          <td>
-            <span
-              class="badge {% if shipment.confirmed %} bg-success {% else %} bg-warning {% endif %}"
-            >
-              {% if shipment.confirmed %} Confirmed {% else %} Pending {% endif
-              %}
-            </span>
-          </td>
-          <td>
-            {% if shipment.created_by %} {{ shipment.created_by.username }} {%
-            else %}
-            <em>Unknown</em>
-            {% endif %}
-          </td>
-          <td>
-            <a href="{% url 'shipment_detail' shipment.id %}" class="btn btn-sm"
-              ><i class="fas fa-eye text-primary"></i
-            ></a>
-            {% if not shipment.confirmed %}
-            <button
-              class="btn btn-sm delete-shipment"
-              data-shipment-id="{{ shipment.id }}"
-            >
-              <i class="fas fa-trash text-danger"></i>
-            </button>
-            {% endif %}
-          </td>
-        </tr>
+          <tr>
+            <td>{{ shipment.factory.name }}</td>
+            <td>{{ shipment.receive_date }}</td>
+            <td>
+              <span
+                class="badge {% if shipment.confirmed %} bg-success {% else %} bg-warning {% endif %}"
+              >
+                {% if shipment.confirmed %} Confirmed {% else %} Pending {% endif %}
+              </span>
+            </td>
+            <td>
+              {% if shipment.created_by %}
+                {{ shipment.created_by.username }} 
+              {% else %}
+                <em>Unknown</em>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'shipment_detail' shipment.id %}" class="btn btn-sm">
+                <i class="fas fa-eye text-primary"></i>
+              </a>
+
+              {% if not shipment.confirmed %}
+                <button
+                  class="btn btn-sm delete-shipment"
+                  data-shipment-id="{{ shipment.id }}"
+                >
+                  <i class="fas fa-trash text-danger"></i>
+                </button>
+              {% endif %}
+            </td>
+          </tr>
         {% empty %}
-        <tr>
-          <td colspan="6" class="p-4 text-center">No orders found.</td>
-        </tr>
+          <tr>
+            <td colspan="6" class="p-4 text-center">No orders found.</td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>

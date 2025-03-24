@@ -32,7 +32,10 @@
         + Add An Item
       </a>
       {% endif %}
-      <a href="{% url 'orders' %}" class="btn btn-view-all fw-semibold me-2">
+      <a
+        href="{% url 'orders' %}"
+        class="btn btn-view-all fw-semibold me-2"
+      >
         View all
       </a>
     </div>
@@ -124,17 +127,20 @@
       </tbody>
     </table>
     <div class="shipment-actions mt-4">
-      {% if request.user.is_superuser or request.user.role == "manager" %} {% if
-      order.status == 'PENDING' %}
+      {% if request.user.is_superuser or request.user.role == "manager" %}
+      {% if order.status == 'PENDING' %}
       <form
         method="post"
         action="{% url 'order-confirm' order.id %}"
         class="d-inline"
       >
         {% csrf_token %}
-        <button type="submit" class="btn btn-success">Confirm Shipment</button>
+        <button type="submit" class="btn btn-success">
+          Confirm Shipment
+        </button>
       </form>
-      {% endif %} {% endif %}
+      {% endif %}
+      {% endif %}
     </div>
 
     <!-- Pagination -->
