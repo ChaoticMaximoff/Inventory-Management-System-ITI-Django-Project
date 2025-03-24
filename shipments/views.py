@@ -147,6 +147,19 @@ class ShipmentItemCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
             )
             return redirect("shipment_detail", pk=shipment.id)
 
+        # Capture the specific error message
+        error_message = form.errors.as_text()
+
+        sweetify.error(
+            request,
+            title="Error",
+            icon="error",
+            text=f"Failed to add item to shipment: {error_message}",
+            timer=2000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
         return render(
             request,
             "shipments/shipment_item_form.html",

@@ -19,25 +19,19 @@
 
 <div class="my-4">
   <div class="card orders-card" style="overflow: auto">
-    <div class="d-flex justify-content-between gap-5 align-items-center">
-      <div class="input-group w-25">
-        <button class="input-group-text">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-        <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon1" />
-      </div>
-      <div>
+    <!-- Controls -->
+    <div class="d-flex justify-content-end align-items-center">
         {% if not shipment.confirmed %}
-          <a href="{% url 'shipment_add_item' shipment.id %}">
-            <button class="btn btn-view-all fw-semibold me-2" style="background-color: #4339f2; color:white">+ Add An Item</button>
+          <a href="{% url 'shipment_add_item' shipment.id %}" class="btn btn-view-all fw-semibold me-2" style="background-color: #4339f2; color:white">
+            + Add An Item
           </a>
         {% endif %}
         <a href="{% url 'shipment_list' %}" class="btn btn-view-all me-2 text-decoration-none">View All</a>
-      </div>
     </div>
 
     <!-- Products Table -->
     <table class="table align-middle mt-3">
+      <!-- Table Head-->
       <thead>
         <tr>
           <th>Product</th>
@@ -48,6 +42,7 @@
           {% endif %}
         </tr>
       </thead>
+      <!-- Table Body -->
       <tbody>
         {% for item in page_obj %}
           <tr>
@@ -78,8 +73,9 @@
         {% endfor %}
       </tbody>
     </table>
+    <!-- End of Products Table-->
 
-    <!-- Pagination inside the card -->
+    <!-- Pagination  -->
     {% if is_paginated %}
       <nav class="pagin mt-3">
         <span class="float-end">
@@ -109,19 +105,21 @@
         </span>
       </nav>
     {% endif %}
+    <!-- End of Pagination -->
   </div>
 </div>
 
 
 <div class="shipment-actions mt-4">
   {% if not shipment.confirmed %}
-    <a href="{% url 'shipment_edit' shipment.id %}" class="btn btn-primary">Update Shipment</a>
-  {% endif %}
-  {% if request.user.is_superuser or request.user.role == "manager" %}
-    {% if not shipment.confirmed %}
+    <a href="{% url 'shipment_edit' shipment.id %}" class="btn btn-view-all fw-semibold me-2" style="background-color: #4339f2; color:white">
+      Update Shipment
+    </a>
+  
+    {% if request.user.is_superuser or request.user.role == "manager" %}
       <form method="post" action="{% url 'shipment_confirm' shipment.id %}" class="d-inline">
         {% csrf_token %}
-        <button type="submit" class="btn">Confirm Shipment</button>
+        <button type="submit" class="btn btn-view-all me-2 text-decoration-none">Confirm Shipment</button>
       </form>
     {% endif %}
   {% endif %}
