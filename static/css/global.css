@@ -177,7 +177,7 @@ a {
 }
 
 a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 .action-icons i {
   cursor: pointer;

@@ -27,7 +27,13 @@
           class="dropdown-menu dropdown-menu-end"
           aria-labelledby="userDropdown"
         >
-          {% if user.is_authenticated %}
+          {%if user.is_authenticated and user.role == "manager"%}
+          <li>
+            <a class="dropdown-item" href="{% url 'accounts:register' %}"
+              >Add user</a
+            >
+          </li>
+          {% endif %} {% if user.is_authenticated %}
           <li>
             <form
               method="post"
