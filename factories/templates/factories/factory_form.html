@@ -1,15 +1,38 @@
-{% extends "base.html" %} {% block content %}
-<div class="container mt-4">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <h2 class="mb-3">
-        {% if factory %}Edit{% else %}Create{% endif %} Factory
-      </h2>
-      <form method="post">
+{% extends 'base.html' %} 
+
+{% block extra_head %}
+  <title>Create Factory</title>
+{% endblock %}
+
+{% block content %}
+<h1 class="text-capitalize">{% if object %}Edit factory{% else %}Add factory{% endif %}</h1>
+<div class="my-4 d-flex flex-column align-items-center justify-content-center">
+  <div class="card orders-card" style="overflow: auto; min-width: 600px">
+    <div class="d-flex justify-content-center gap-5 align-items-center">
+      <form method="post" class="d-flex flex-column gap-4 p-4">
         {% csrf_token %}
-        <div class="mb-3">{{ form.as_p }}</div>
-        <button type="submit"class="btn m-5" style="background-color: #4339f2; color: white;">Create</button>
-        <a href="{% url 'factory_list' %}" class="text-decoration-none btn" style="color: #4339f2; border:1px solid #4339f2;" >Cancel</a>
+        <div class="d-flex gap-4 align-items-center">
+          <label class="form-label fw-bold" for="{{ form.name.id_for_label }}">Name: </label>
+          <div>{{ form.name }}</div>
+        </div>
+        <div class="d-flex gap-4 align-items-center">
+          <label class="form-label fw-bold" for="{{ form.location.id_for_label }}">Location: </label>
+          <div>{{ form.location }}</div>
+        </div>
+        <div class="d-flex align-items-center justify-content-center gap-2">
+          <a
+            href="{% url 'factory_list' %}"
+            class="btn btn-view-all fw-semibold me-2"
+            >Cancel</a
+          >
+          <button
+            type="submit"
+            class="btn btn-view-all fw-semibold me-2 text-capitalize"
+            style="background-color: #4339f2; color: white"
+          >
+          {% if object %}Update factory{% else %}Create factory{% endif %}
+          </button>
+        </div>
       </form>
     </div>
   </div>
