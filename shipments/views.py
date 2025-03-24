@@ -9,6 +9,7 @@ from shipments.forms import ShipmentForm, ShipmentItemForm
 from django.core.paginator import Paginator
 import sweetify
 from .filters import ShipmentFilter
+from .forms import ShipmentItemForm
 
 
 class RoleRequiredMixin(UserPassesTestMixin):
@@ -130,6 +131,7 @@ class ShipmentCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
 
 class ShipmentItemCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
     required_roles = ["EMPLOYEE"]
+    form_class = ShipmentItemForm
 
     def get(self, request, shipment_id):
         shipment = get_object_or_404(Shipment, id=shipment_id, confirmed=False)
