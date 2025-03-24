@@ -277,10 +277,7 @@ class ShipmentUpdateView(LoginRequiredMixin, UpdateView):
         return response
 
 
-class ShipmentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    def test_func(self):
-        return self.request.user.role == 'employee'
-    
+class ShipmentDeleteView(LoginRequiredMixin, DeleteView):
     model = Shipment
     success_url = reverse_lazy("shipment_list")
 

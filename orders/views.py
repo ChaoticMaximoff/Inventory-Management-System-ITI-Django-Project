@@ -289,10 +289,7 @@ class OrderUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class OrderDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    def test_func(self):
-        return self.request.user.role == 'employee'
-    
+class OrderDeleteView(LoginRequiredMixin, DeleteView):
     model = Order
     success_url = reverse_lazy("orders")
 
