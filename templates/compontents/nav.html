@@ -13,8 +13,7 @@
           id="userDropdown"
           data-bs-toggle="dropdown"
           aria-expanded="false"
-          aria-label="User menu for {{ user.username }}"
-        >
+          aria-label="User menu for {{ user.username }}">
           <span class="d-flex align-items-center gap-2 text-start">
             {{ user.username }}<br />
             <small class="text-muted">{{ user.role }}</small>
@@ -23,15 +22,19 @@
         </a>
         <ul
           class="dropdown-menu dropdown-menu-end"
-          aria-labelledby="userDropdown"
-        >
-          {% if user.is_authenticated %}
+          aria-labelledby="userDropdown">
+          {%if user.is_authenticated and user.role == "manager"%}
+          <li>
+            <a class="dropdown-item" href="{% url 'accounts:register' %}"
+              >Add user</a
+            >
+          </li>
+          {% endif %} {% if user.is_authenticated %}
           <li>
             <form
               method="post"
               action="{% url 'accounts:logout' %}"
-              class="d-inline"
-            >
+              class="d-inline">
               {% csrf_token %}
               <button type="submit" class="dropdown-item">Logout</button>
             </form>

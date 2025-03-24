@@ -1,9 +1,8 @@
 {% extends "base.html" %} {% load static %} {% block extra_head %}
-<title>List Product</title>
+<title>Products</title>
 <link
   href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-  rel="stylesheet"
-/>
+  rel="stylesheet" />
 <link rel="stylesheet" href="{% static 'style/style.css' %}" />
 {% endblock %} {% block content %}
 <div class="container py-4 bg-light">
@@ -12,21 +11,18 @@
   <form
     method="get"
     action=""
-    class="d-flex flex-column align-items-center mb-4"
-  >
+    class="d-flex flex-column align-items-center mb-4">
     <div class="input-group mb-3" style="max-width: 400px">
       <input
         type="text"
         name="q"
         value="{{ query }}"
         class="form-control"
-        placeholder="Search by name"
-      />
+        placeholder="Search by name" />
       <button
         type="submit"
         class="btn btn-sm"
-        style="background-color: var(--primary-color); color: white"
-      >
+        style="background-color: var(--primary-color); color: white">
         Search
       </button>
     </div>
@@ -39,8 +35,7 @@
         src="{{ product.image.url }}"
         alt="{{ product.name }}"
         class="img-thumbnail mr-3"
-        style="max-width: 100px; height: auto"
-      />
+        style="max-width: 100px; height: auto" />
       <div>
         <strong>Name:</strong> {{ product.name }} -
         <strong>Quantity:</strong> {{ product.quantity }}
@@ -64,8 +59,7 @@
           class="btn btn-sm"
           style="background-color: var(--primary-color); color: white"
           data-bs-toggle="modal"
-          data-bs-target="#deleteModal{{ product.id }}"
-        >
+          data-bs-target="#deleteModal{{ product.id }}">
           Delete
         </a>
       </div>
@@ -76,14 +70,12 @@
       id="deleteModal{{ product.id }}"
       tabindex="-1"
       aria-labelledby="deleteModalLabel{{ product.id }}"
-      aria-hidden="true"
-    >
+      aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div
             class="modal-header text-white"
-            style="background-color: var(--primary-color); color: white"
-          >
+            style="background-color: var(--primary-color); color: white">
             <h5 class="modal-title" id="deleteModalLabel{{ product.id }}">
               Confirm Delete
             </h5>
@@ -91,8 +83,7 @@
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+              aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <p>
@@ -103,22 +94,19 @@
           <div class="modal-footer">
             <form
               method="post"
-              action="{% url 'inventory:product_delete' product.id %}"
-            >
+              action="{% url 'inventory:product_delete' product.id %}">
               {% csrf_token %}
               <button
                 type="submit"
                 class="btn btn-danger"
-                style="background-color: var(--primary-color); color: white"
-              >
+                style="background-color: var(--primary-color); color: white">
                 Yes, Delete
               </button>
             </form>
             <button
               type="button"
               class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
+              data-bs-dismiss="modal">
               Cancel
             </button>
           </div>
@@ -140,8 +128,7 @@
           <a
             class="page-link"
             href="?page={{ products.previous_page_number }}{% if query %}&q={{ query }}{% endif %}"
-            aria-label="Previous"
-          >
+            aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>
           </a>
         </li>
@@ -158,8 +145,7 @@
           <a
             class="page-link"
             href="?page={{ products.next_page_number }}{% if query %}&q={{ query }}{% endif %}"
-            aria-label="Next"
-          >
+            aria-label="Next">
             <span aria-hidden="true">&raquo;</span>
           </a>
         </li>

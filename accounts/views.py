@@ -15,7 +15,8 @@ from shipments.models import Shipment
 import sweetify
 from datetime import timedelta
 from django.utils import timezone
-from django.db.models.functions import TruncDate  # Import TruncDate
+from django.db.models.functions import TruncDate
+from django.core.paginator import Paginator  
 
 class LoginView(generic.View):
     form_class = LoginForm
@@ -91,8 +92,11 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Fetch products with annotated order item count (for other parts of the dashboard)
-        products = Product.objects.annotate(order_item_count=Count('order_items'))        
+        products = Product.objects.annotate(order_item_count=Count('order_items')).order_by('-order_item_count')
+        paginator = Paginator(products, 4)  # 4 products per page
+        page_number = self.request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+
         # Fetch low-stock products (quantity < critical_level)
         low_stock_products = Product.objects.filter(
             quantity__lt=F('critical_level')
@@ -193,7 +197,7 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
 
 
         # Populate context
-        context['products'] = products
+        context['products'] = page_obj
         context['total_products'] = total_products
         context['low_stock_products'] = low_stock_products  # For Stock Alert table
         context['orders'] = orders
