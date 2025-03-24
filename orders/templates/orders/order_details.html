@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
-{% block content %}
-
-<style>
+{% block extra_head %}
+  <style>
     .action-icons i {
       cursor: pointer;
       margin: 0 5px;
@@ -19,33 +18,26 @@
       box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
       padding: 15px;
     }
-    </style>
+  </style>
+{% endblock %}
 
-
+{% block content %}
 <h5 class="fw-bold" >Products for order </h5>
+
 <div class="my-4">
     <div class="card orders-card" style="overflow: auto">
-      <div class="d-flex justify-content-between gap-5 align-items-center">
-        <div class="input-group w-25">
-            <button class="input-group-text" >
-              <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search"
-              aria-label="Search"
-              aria-describedby="basic-addon1" />
-          </div>
-    <div>
-     <a href="{% url 'order_add_item' order_items.id %}"><button class="btn btn-view-all fw-semibold me-2" style="background-color: #4339f2; color:white"> + Add An Item</button></a> 
-      <button class="btn btn-view-all me-2">View All</button>
-    </div>
+
+      <div class="d-flex justify-content-end">
+        <a href="{% url 'order_add_item' order.id %}" class="btn btn-view-all fw-semibold me-2" style="background-color: #4339f2; color:white">
+          + Add An Item 
+        </a> 
       </div>
+
+    
+      
       <table class="table align-middle mt-3">
         <thead>
           <tr>
-            <th></th>
             <th>Order ID</th>
             <th> Product</th>
             <th>quantity</th>
@@ -54,19 +46,16 @@
             <th>Action</th>
           </tr>
         </thead>
-        {% for item in order_items.items.all %}
         <tbody>
+          {% for item in page_obj %}
           <tr>
-            <td><input type="checkbox" /></td>
-            <td>
-              #{{ item.product.name }}
-            </td>
-            <td>{{item.id}}</td>
-            <td>{{ item.product }}</td>
+            <td>#{{ item.order.id }}</td>
+            <td>{{ item.product.name }}</td>
             <td>{{ item.quantity }}</td>
+            <td>{{ item.product.quantity }}</td>
             <td>{{ item.created_by_user }}</td>
             <td class="action-icons">
-              <button type="button" class="btn" data-bs-toggle="modal" data-bs-toggle="modal" data-bs-target="#deleteorderitem-{{item.id}}">
+              <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteorderitem-{{item.id}}">
                 <i class="fas fa-trash text-danger"></i>
               </button>
               <!-- Confirm Delete Modal -->
@@ -93,28 +82,66 @@
             </td>
           </tr>
           {% empty %}
-                
-                    <td colspan="10" class="p-4 text-center">No orders found.</td>
-                
-            {% endfor %}
-            <div class="shipment-actions mt-4">
-              {% if order_items.status == 'PENDING' %}
-                  <a href="{% url 'order_add_item' order_items.id %}"
-                     class="btn btn-primary">➕ Add Item</a>
-                  <!-- <a href="#"
-                     class="btn btn-primary">Update Shipment</a> -->
-              {% endif %}
-              {% if request.user.is_superuser or request.user.role == "manager" %}
-                  {%if order_items.status == 'PENDING'%}
-                      <form method="post"
-                            action="{% url 'order-confirm' order_items.id %}"
-                            class="d-inline">
-                          {% csrf_token %}
-                          <p> {{order_items.status}}</p>
-                          <button type="submit" class="btn btn-success">✅ Confirm Shipment</button>
-                      </form>
-                  {% endif %}
-              {% endif %}
-          </div>
-            
+          <tr>
+            <td colspan="7" class="p-4 text-center">No items found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="shipment-actions mt-4">
+        {% if order_items.status == 'PENDING' %}
+            <a href="{% url 'order_add_item' order_items.id %}"
+               class="btn btn-primary">➕ Add Item</a>
+            <!-- <a href="#"
+               class="btn btn-primary">Update Shipment</a> -->
+        {% endif %}
+        {% if request.user.is_superuser or request.user.role == "manager" %}
+            {%if order_items.status == 'PENDING'%}
+                <form method="post"
+                      action="{% url 'order-confirm' order_items.id %}"
+                      class="d-inline">
+                    {% csrf_token %}
+                    <p> {{order_items.status}}</p>
+                    <button type="submit" class="btn btn-success">✅ Confirm Shipment</button>
+                </form>
+            {% endif %}
+        {% endif %}
+      </div>
+
+      <!-- Pagination -->
+      {% if is_paginated %}
+        <nav>
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1">⏮ First</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}"
+                  >⬅ Previous</a
+                >
+              </li>
+            {% endif %}
+            <li class="page-item active">
+              <span class="page-link"
+                >Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span
+              >
+            </li>
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}"
+                  >Next ➡</a
+                >
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}"
+                  >Last ⏭</a
+                >
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+    </div>
+</div>
 {% endblock %}
