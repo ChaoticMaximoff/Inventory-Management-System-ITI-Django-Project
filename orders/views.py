@@ -12,6 +12,7 @@ from django.contrib import messages
 from .forms import OrdersForm, OrderItemForm
 from django.core.paginator import Paginator
 from .filters import OrderFilter
+from django.db.models import Case, When, Value, IntegerField
 
 
 # custom mixin for the required rules
@@ -46,11 +47,16 @@ class OrderListView(LoginRequiredMixin, ListView):
     model = Order
     template_name = "orders/order_list.html"
     context_object_name = "orders"
-    ordering = ["-created_at"]
     paginate_by = 8
 
     def get_queryset(self):
-        queryset = Order.objects.order_by("status")
+        queryset = Order.objects.annotate(
+            status_order=Case(
+                When(status="PENDING", then=Value(0)),
+                When(status="CONFIRMED", then=Value(1)),
+                output_field=IntegerField(),
+            )
+        ).order_by("status_order", "-created_at")
         self.filterset = OrderFilter(self.request.GET, queryset=queryset)
         return self.filterset.qs
 
@@ -82,7 +88,6 @@ class OrderDetailsView(DetailView):
 
 
 class OrdersCreateView(LoginRequiredMixin, View):
-    # required_roles=["EMPLOYEE"] #any employee can create an order
     def get(self, request):
         form = OrdersForm()
         return render(
@@ -95,7 +100,27 @@ class OrdersCreateView(LoginRequiredMixin, View):
             order = form.save(commit=False)
             order.created_by_user = request.user
             order.save()
+            sweetify.success(
+                request,
+                title="Order created",
+                icon="success",
+                text="Order has been created successfully.",
+                timer=3000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
             return redirect("orders")
+        sweetify.error(
+            request,
+            title="Error",
+            icon="error",
+            text="There was an error creating the order. Please check the form and try again.",
+            timer=3000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
         return render(
             request, "orders/order_form.html", {"form": form, "mode": "create"}
         )

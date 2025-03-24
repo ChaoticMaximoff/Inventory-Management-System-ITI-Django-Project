@@ -22,8 +22,8 @@
 
 <div class="my-4">
   <div class="card orders-card" style="overflow: auto">
-    {% if order.status == 'PENDING' %}
     <div class="d-flex justify-content-end">
+      {% if order.status == 'PENDING' %}
       <a
         href="{% url 'order_add_item' order.id %}"
         class="btn btn-view-all fw-semibold me-2"
@@ -31,8 +31,14 @@
       >
         + Add An Item
       </a>
+      {% endif %}
+      <a
+        href="{% url 'orders' %}"
+        class="btn btn-view-all fw-semibold me-2"
+      >
+        View all
+      </a>
     </div>
-    {% endif %}
 
     <table class="table align-middle mt-3">
       <thead>

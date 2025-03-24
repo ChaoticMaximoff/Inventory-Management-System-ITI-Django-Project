@@ -1,21 +1,26 @@
-{% extends 'base.html' %}
-
-{% block content %}
-
-    <h1>Create Order</h1>
-    <div class="my-4">
-        <div class="card orders-card" style="overflow: auto">
-          <div class="d-flex justify-content-between gap-5 align-items-center">
-    <form method="post" class="align-middle mt-3 p-4">
+{% extends 'base.html' %} {% block content %}
+<h1>Create Order</h1>
+<div class="my-4">
+  <div class="card orders-card" style="overflow: auto">
+    <div class="d-flex justify-content-between gap-5 align-items-center">
+      <form method="post" class="align-middle mt-3 p-4">
         {% csrf_token %}
-        <label class="form-label">Supermarket: </label>
-        {{ form.supermarket }}
-
-        <a href="{% url 'orders' %}" class="btn text-decoration-none border px-4"> cancel</a>
-        <button type="submit" class="btn m-5 button-1st">Create Order</button>
-    </form>
-          </div>
+        <div class="mb-3">
+          <label class="form-label">Supermarket: </label>
+          {{ form.supermarket }}
         </div>
+        <div class="mb-3">
+          <label class="form-label">Receive Date: </label>
+          {{ form.receive_date }}
+        </div>
+        <a
+          href="{% url 'orders' %}"
+          class="btn text-decoration-none border px-4"
+          >Cancel</a
+        >
+        <button type="submit" class="btn m-5 button-1st">Create Order</button>
+      </form>
     </div>
-    
+  </div>
+</div>
 {% endblock %}

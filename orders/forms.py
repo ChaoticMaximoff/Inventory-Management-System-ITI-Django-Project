@@ -1,12 +1,6 @@
 from django.utils import timezone
 from django import forms
-from orders.models import Order, Supermarket, OrderItem
-
-# class SupermarketForm(forms.ModelForm):
-#     class Meta:
-#         model = Supermarket
-#         fields = "__all__"
-
+from orders.models import Order, OrderItem
 
 
 class OrdersForm(forms.ModelForm):
@@ -21,23 +15,25 @@ class OrdersForm(forms.ModelForm):
             raise forms.ValidationError("Receive date cannot be in the past.")
         return receive_date
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add Bootstrap class to the supermarket dropdown
+        self.fields["supermarket"].widget.attrs.update({"class": "form-select w-50"})
+        self.fields["receive_date"].widget.attrs.update({"class": "form-control w-50"})
+
+
+class OrderItemForm(forms.ModelForm):
+    class Meta:
+        model = OrderItem
+        fields = ["product", "quantity"]
+
     def clean_quantity(self):
         quantity = self.cleaned_data.get("quantity")
         if quantity <= 0:
             raise forms.ValidationError("Quantity must be greater than zero.")
         return quantity
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Add Bootstrap class to the supermarket dropdown
-        self.fields['supermarket'].widget.attrs.update({'class': 'form-select w-50'})    
 
-class OrderItemForm(forms.ModelForm):
-    class Meta:
-        model = OrderItem
-        fields =[ "product", "quantity"]
-        
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['product'].widget.attrs.update({'class': 'form-select w-25'})
-        self.fields['quantity'].widget.attrs.update({'class': 'form-control'})
+        self.fields["product"].widget.attrs.update({"class": "form-select w-25"})
+        self.fields["quantity"].widget.attrs.update({"class": "form-control"})
