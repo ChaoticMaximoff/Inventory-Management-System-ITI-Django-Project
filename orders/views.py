@@ -66,7 +66,7 @@ class OrderListView(LoginRequiredMixin, ListView):
         return context
 
 
-class OrderDetailsView(DetailView):
+class OrderDetailsView(LoginRequiredMixin, DetailView):
     model = Order
     template_name = "orders/order_details.html"
     context_object_name = "order"
@@ -159,14 +159,13 @@ class OrderCreateItemView(LoginRequiredMixin, View):
                     {"form": form, "order": order},
                 )
 
-            # Decrease the stock of the product
-            product.quantity -= quantity
-            product.save()
-
             item = form.save(commit=False)
             item.created_by_user = request.user
             item.order = order
             item.save()
+            # Decrease the stock of the product
+            product.quantity -= quantity
+            product.save()
 
             sweetify.success(
                 request,
@@ -230,7 +229,7 @@ class OrderConfirmView(LoginRequiredMixin, View):
         return redirect("order_items", pk=order.id)
 
 
-class SupermarketOrderListView(ListView):
+class SupermarketOrderListView(LoginRequiredMixin, ListView):
     model = Order
     template_name = "order/order_detail.html"
     context_object_name = "orders"
