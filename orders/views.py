@@ -22,7 +22,17 @@ class RoleRequiredMixin(UserPassesTestMixin):
         if 'EMPLOYEE' in self.required_roles and user.role.upper() == 'MANAGER':
             return True
     def handle_no_permission(self):
-        messages.error(self.request, "You do not have the permission to access this page.")
+        sweetify.error(
+            self.request,
+            title="Permission denied",
+            icon="error",
+            text="You do not have the permission to access this page.",
+            timer=3000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
+        
         return redirect("orders")
 
 class OrderListView(ListView):
@@ -106,7 +116,16 @@ class OrderConfirmView(LoginRequiredMixin, View):
 
         order.status = 'CONFIRMED'
         order.save()
-        messages.success(request, "order confirmed! Stock updated.")
+        sweetify.success(
+            self.request,
+            title="Order confirmed",
+            icon="success",
+            text="Stock updated successfully.",
+            timer=3000,
+            position="top-end",
+            toast=True,
+            showConfirmButton=False,
+        )
         return redirect("order_items", pk=order.id)
 
 
