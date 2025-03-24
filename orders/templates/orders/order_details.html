@@ -62,6 +62,8 @@
             <td>{{ item.product }}</td>
             <td>{{ item.quantity }}</td>
             <td>{{ item.created_by_user }}</td>
+            {% if order_items.status == 'PENDING' %}
+
             <td class="action-icons">
               <button type="button" class="btn" data-bs-toggle="modal" data-bs-toggle="modal" data-bs-target="#deleteorderitem-{{item.id}}">
                 <i class="fas fa-trash text-danger"></i>
@@ -88,30 +90,11 @@
               </div>
             </div>
             </td>
+            {% endif %}
           </tr>
           {% empty %}
                 
                     <td colspan="10" class="p-4 text-center">No orders found.</td>
                 
             {% endfor %}
-            <div class="shipment-actions mt-4">
-              {% if order_items.status == 'PENDING' %}
-                  <a href="{% url 'order_add_item' order_items.id %}"
-                     class="btn btn-primary">➕ Add Item</a>
-                  <!-- <a href="#"
-                     class="btn btn-primary">Update Shipment</a> -->
-              {% endif %}
-              {% if request.user.is_superuser or request.user.role == "manager" %}
-                  {%if order_items.status == 'PENDING'%}
-                      <form method="post"
-                            action="{% url 'order-confirm' order_items.id %}"
-                            class="d-inline">
-                          {% csrf_token %}
-                          <p> {{order_items.status}}</p>
-                          <button type="submit" class="btn btn-success">✅ Confirm Shipment</button>
-                      </form>
-                  {% endif %}
-              {% endif %}
-          </div>
-            
 {% endblock %}

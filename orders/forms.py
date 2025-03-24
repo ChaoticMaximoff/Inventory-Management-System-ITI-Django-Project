@@ -31,6 +31,8 @@ class OrdersForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Add Bootstrap class to the supermarket dropdown
         self.fields['supermarket'].widget.attrs.update({'class': 'form-select w-50'})    
+        self.fields['receive_date'].widget.attrs.update({'class': 'form-select w-50'})    
+
 
 class OrderItemForm(forms.ModelForm):
     class Meta:

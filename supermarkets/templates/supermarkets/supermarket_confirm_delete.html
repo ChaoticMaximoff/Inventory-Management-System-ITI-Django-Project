@@ -10,11 +10,10 @@
 
       <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">
-          <i class="bi bi-trash"></i> Confirm Delete
+        <button type="submit" class="btn m-2" style="background-color: #4339f2; color:white"> Confirm Delete
         </button>
-        <a href="{% url 'supermarket_list' %}" class="btn btn-secondary">
-          <i class="bi bi-arrow-left"></i> Cancel
+        <a href="{% url 'supermarket_list' %}"class="btn m-2" style="color:#4339f2; border:1px solid #4339f2">
+           Cancel
         </a>
       </form>
     </div>

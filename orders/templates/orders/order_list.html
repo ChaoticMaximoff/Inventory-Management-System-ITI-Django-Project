@@ -38,13 +38,11 @@
       <div>
         <a href="{% url 'order_create' %}"><button class="btn btn-view-all fw-semibold me-2"
             style="background-color: #4339f2; color:white"> + Add An Order</button></a>
-        <button class="btn btn-view-all me-2">View All</button>
       </div>
     </div>
     <table class="table align-middle mt-3">
       <thead>
         <tr>
-          <th><input type="checkbox" /></th>
           <th>Supermarket Name</th>
           <th>Order ID</th>
           <th>Receive Date</th>
@@ -56,7 +54,6 @@
       {% for order in orders %}
       <tbody>
         <tr>
-          <td><input type="checkbox" /></td>
           <td>
 
             {{ order.supermarket }}
@@ -98,5 +95,43 @@
         <tr>
           <td colspan="6" class="p-4 text-center">No orders found.</td>
         </tr>
+        </tbody>
         {% endfor %}
+    </table>
+
+    {% if is_paginated %}
+    <nav class="pagin">
+      <span>{{page_obj.object_list.count }} items are shown</span>
+      <span class="float-end">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a  href="?page=1">first</a>
+        </li>
+        <li class="page-item">
+          <a href="?page={{ page_obj.previous_page_number }}" 
+            >⬅</a
+          >
+        </li>
+        {% endif %}
+        <li class="page-item ">
+          <span  style="background-color: #4339f2; color:white; border-radius: 4px; padding-left: 10px; padding-right: 10px;"
+            >{{ page_obj.number }}</span
+          >
+        </li>
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a href="?page={{ page_obj.next_page_number }}"
+            >➡</a
+          >
+        </li>
+        <li class="page-item">
+          <a href="?page={{ paginator.num_pages }}">last</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </span>
+    {% endif %}
+        
         {% endblock %}

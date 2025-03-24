@@ -1,45 +1,48 @@
 {% extends "base.html" %} {% block content %}
-<div class="container mt-4">
-  <h2 class="mb-3">{{ factory.name }}</h2>
-  <p><strong>Location:</strong> {{ factory.location }}</p>
 
+
+
+<h3>Shipments in {{factory.name}} factory</h3>
+<p><strong>Location: </strong> {{factory.location}} </p>
+<div class=" mt-4">
   <div class="card shadow-sm">
     <div class="card-body">
       <h5 class="card-title">Factory Statistics</h5>
       <p class="card-text">
-        <strong>Total Shipments:</strong> {{ factory.shipments.count }}
+        Total Shipments: {{ factory.shipments.count }}
       </p>
     </div>
   </div>
-
-  <h4 class="mt-4">Shipments from this Factory</h4>
-  <div class="table-responsive">
-    <table class="table table-striped table-hover shadow-sm">
-      <thead class="table-dark">
-        <tr>
-          <th>#</th>
-          <th>Receive Date</th>
-          <th>Confirmed</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
+</div>
+<div class="my-4">
+    <div class="card orders-card" style="overflow: auto">
+      <div class="d-flex justify-content-between gap-5 align-items-center">
+      </div>
+      <table class="table align-middle mt-3">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Receive Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
         {% for shipment in factory.shipments.all %}
         <tr>
           <td>{{ forloop.counter }}</td>
           <td>{{ shipment.receive_date }}</td>
           <td>
             {% if shipment.confirmed %}
-            <span class="badge bg-success">Confirmed</span>
+            <p class="text-success">Confirmed</p>
             {% else %}
-            <span class="badge bg-warning">Pending</span>
+            <p class="text-info">Pending</p>
             {% endif %}
           </td>
           <td>
             <a
               href="{% url 'shipment_detail' shipment.id %}"
-              class="btn btn-info btn-sm"
-              >View</a
+              class="btn btn-sm"
+              ><i class="fas fa-eye text-primary"></i></a
             >
           </td>
         </tr>
@@ -50,14 +53,7 @@
           </td>
         </tr>
         {% endfor %}
-      </tbody>
-    </table>
-  </div>
 
-  <a href="{% url 'factory_edit' factory.id %}" class="btn btn-warning">Edit</a>
-  <a href="{% url 'factory_delete' factory.id %}" class="btn btn-danger"
-    >Delete</a
-  >
-  <a href="{% url 'factory_list' %}" class="btn btn-secondary">Back to List</a>
+
 </div>
 {% endblock %}

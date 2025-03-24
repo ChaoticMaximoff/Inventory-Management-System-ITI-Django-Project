@@ -19,13 +19,7 @@
 
 <div class="my-4">
   <div class="card orders-card" style="overflow: auto">
-    <div class="d-flex justify-content-between gap-5 align-items-center">
-      <div class="input-group w-25">
-        <button class="input-group-text">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-        <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon1" />
-      </div>
+    <div class="d-flex justify-content-end gap-5 align-items-center">
       <div>
         {% if not shipment.confirmed %}
           <a href="{% url 'shipment_add_item' shipment.id %}">
@@ -115,13 +109,13 @@
 
 <div class="shipment-actions mt-4">
   {% if not shipment.confirmed %}
-    <a href="{% url 'shipment_edit' shipment.id %}" class="btn btn-primary">Update Shipment</a>
+    <a href="{% url 'shipment_edit' shipment.id %}" class="btn btn-primary" style="background-color: #4339f2; color:white">Update Shipment</a>
   {% endif %}
   {% if request.user.is_superuser or request.user.role == "manager" %}
     {% if not shipment.confirmed %}
-      <form method="post" action="{% url 'shipment_confirm' shipment.id %}" class="d-inline">
+      <form method="post" action="{% url 'shipment_confirm' shipment.id %}" class="d-inline" >
         {% csrf_token %}
-        <button type="submit" class="btn">Confirm Shipment</button>
+        <button type="submit" class="btn m-2" style="color: #4339f2; border:1px solid #4339f2">Confirm Shipment</button>
       </form>
     {% endif %}
   {% endif %}

@@ -78,7 +78,7 @@ class OrderCreateItemView(LoginRequiredMixin, View):
             item.created_by_user = request.user
             item.order = order
             
-            if item.quantity <= item.product.quantity and item.product.quantity <= 0:
+            if item.quantity <= item.product.quantity and item.product.quantity >= 0:
                 item.product.quantity -=item.quantity
                 item.product.save()
                 item.save()
