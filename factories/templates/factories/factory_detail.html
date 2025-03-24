@@ -1,6 +1,5 @@
-{% extends "base.html" %} {% block content %}
-
-
+{% extends "base.html" %}
+{% block content %}
 
 <h3>Shipments in {{factory.name}} factory</h3>
 <p><strong>Location: </strong> {{factory.location}} </p>
@@ -27,7 +26,8 @@
             <th>Actions</th>
           </tr>
         </thead>
-        {% for shipment in factory.shipments.all %}
+        <tbody>
+        {% for shipment in shipments %}
         <tr>
           <td>{{ forloop.counter }}</td>
           <td>{{ shipment.receive_date }}</td>
@@ -39,11 +39,9 @@
             {% endif %}
           </td>
           <td>
-            <a
-              href="{% url 'shipment_detail' shipment.id %}"
-              class="btn btn-sm"
-              ><i class="fas fa-eye text-primary"></i></a
-            >
+            <a href="{% url 'shipment_detail' shipment.id %}" class="btn btn-sm">
+              <i class="fas fa-eye text-primary"></i>
+            </a>
           </td>
         </tr>
         {% empty %}
@@ -53,7 +51,27 @@
           </td>
         </tr>
         {% endfor %}
-
-
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span class="step-links">
+          {% if shipments.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ shipments.previous_page_number }}">previous</a>
+          {% endif %}
+          <span class="current">
+            Page {{ shipments.number }} of {{ shipments.paginator.num_pages }}.
+          </span>
+          {% if shipments.has_next %}
+            <a href="?page={{ shipments.next_page_number }}">next</a>
+            <a href="?page={{ shipments.paginator.num_pages }}">last &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  <a href="{% url 'factory_list' %}" class="text-decoration-none btn m-3" style="border: 1px solid #4339f2; color:#4339f2">
+    Back to Factories
+  </a>
 </div>
+
 {% endblock %}
