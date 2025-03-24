@@ -176,21 +176,5 @@
       >Add New Product</a
     >
   </div>
-  {% if messages %} {% for message in messages %}
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      Swal.fire({
-        title: "Deletion Error",
-        text: "{{ message }}",
-        icon: "error",
-        toast: true,
-        position: "top",
-        showConfirmButton: false,
-        timer: 5000,
-        timerProgressBar: true,
-      });
-    });
-  </script>
-  {% endfor %} {% endif %}
 </div>
 {% endblock %}
