@@ -11,7 +11,7 @@ import sweetify
 from factories.models import Factory
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-
+from .forms import FactoryForm
 
 class FactoryListView(LoginRequiredMixin, ListView):
     model = Factory
@@ -35,10 +35,9 @@ class FactoryDetailView(LoginRequiredMixin, DetailView):
 
 class FactoryCreateView(LoginRequiredMixin, CreateView):
     model = Factory
-    fields = ["name", "location"]
+    form_class = FactoryForm 
     template_name = "factories/factory_form.html"
     success_url = reverse_lazy("factory_list")
-
 
 class FactoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Factory
