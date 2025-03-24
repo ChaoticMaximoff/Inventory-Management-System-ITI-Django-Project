@@ -1,114 +1,128 @@
-{% extends "base.html" %} {% block title %} Shipment Details {% endblock title%} {% block content %}
+{% extends "base.html" %}
+
+{% block title %} Shipment Details {% endblock title %}
+
+{% block content %}
 <h2>Shipment Details</h2>
-<p><strong>Factory:</strong> {{ shipment.factory.name }}</p>
-<p><strong>Receive Date:</strong> {{ shipment.receive_date }}</p>
-<p><strong>Confirmed:</strong> {{ shipment.confirmed|yesno:"✅,❌" }}</p>
-<p>
-  <strong>Created By:</strong>
-  {% if shipment.created_by %} {{ shipment.created_by.username }} {% else %}
-  <em>Unknown</em>
+
+
+<div class="mt-4">
+  {% if request.user.is_superuser or request.user.role == "manager" %}
+    {% if order_items.status == 'PENDING' %}
+      <form method="post" action="{% url 'order-confirm' order_items.id %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn fw-semibold me-2" style="color:#4339f2; border:1px solid #4339f2">Confirm Order</button>
+      </form>
+    {% endif %}
   {% endif %}
-</p>
-<h3 class="mt-4">Items</h3>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Product</th>
-      <th>Quantity</th>
-      <th>Added By</th>
-      {% if not shipment.confirmed %}
-      <th>Actions</th>
-      {% endif %}
-    </tr>
-  </thead>
-  <tbody>
-    {% for item in page_obj %}
-    <tr>
-      <td>{{ item.product.name }}</td>
-      <td>{{ item.quantity }}</td>
-      <td>
-        {% if item.created_by %} {{ item.created_by.username }} {% else %}
-        <em>Unknown</em>
+</div>
+
+<div class="my-4">
+  <div class="card orders-card" style="overflow: auto">
+    <!-- Controls -->
+    <div class="d-flex justify-content-end align-items-center">
+        {% if not shipment.confirmed %}
+          <a href="{% url 'shipment_add_item' shipment.id %}" class="btn btn-view-all fw-semibold me-2" style="background-color: #4339f2; color:white">
+            + Add An Item
+          </a>
         {% endif %}
-      </td>
-      {% if not shipment.confirmed %}
-      <td>
-        <form
-          action="{% url 'shipment_delete_item' item.id %}"
-          method="post"
-          class="delete-item-form"
-        >
-          {% csrf_token %}
-          <button type="submit" class="btn btn-danger btn-sm">
-            <i class="fas fa-trash"></i> Delete
-          </button>
-        </form>
-      </td>
-      {% endif %}
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="{% if shipment.confirmed %}3{% else %}4{% endif %}">
-        No items added yet.
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<!-- Pagination Controls -->
-{% if is_paginated %}
-<nav>
-  <ul class="pagination">
-    {% if page_obj.has_previous %}
-    <li class="page-item">
-      <a class="page-link" href="?page=1">⏮ First</a>
-    </li>
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page_obj.previous_page_number }}"
-        >⬅ Previous</a
-      >
-    </li>
+        <a href="{% url 'shipment_list' %}" class="btn btn-view-all me-2 text-decoration-none">View All</a>
+    </div>
+
+    <!-- Products Table -->
+    <table class="table align-middle mt-3">
+      <!-- Table Head-->
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Added By</th>
+          {% if not shipment.confirmed %}
+            <th>Actions</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <!-- Table Body -->
+      <tbody>
+        {% for item in page_obj %}
+          <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>
+              {% if item.created_by %}
+                {{ item.created_by.username }}
+              {% else %}
+                <em>Unknown</em>
+              {% endif %}
+            </td>
+            {% if not shipment.confirmed %}
+              <td>
+                <form action="{% url 'shipment_delete_item' item.id %}" method="post" class="delete-item-form">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm">
+                    <i class="fas fa-trash text-danger"></i>
+                  </button>
+                </form>
+              </td>
+            {% endif %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="10" class="p-4 text-center">No orders found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <!-- End of Products Table-->
+
+    <!-- Pagination  -->
+    {% if is_paginated %}
+      <nav class="pagin mt-3">
+        <span class="float-end">
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a href="?page=1">first</a>
+              </li>
+              <li class="page-item">
+                <a href="?page={{ page_obj.previous_page_number }}">⬅</a>
+              </li>
+            {% endif %}
+            <li class="page-item">
+              <span style="background-color: #4339f2; color:white; border-radius: 4px; padding-left: 10px; padding-right: 10px;">
+                {{ page_obj.number }}
+              </span>
+            </li>
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a href="?page={{ page_obj.next_page_number }}">➡</a>
+              </li>
+              <li class="page-item">
+                <a href="?page={{ paginator.num_pages }}">last</a>
+              </li>
+            {% endif %}
+          </ul>
+        </span>
+      </nav>
     {% endif %}
-    <li class="page-item active">
-      <span class="page-link"
-        >Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span
-      >
-    </li>
-    {% if page_obj.has_next %}
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page_obj.next_page_number }}"
-        >Next ➡</a
-      >
-    </li>
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}"
-        >Last ⏭</a
-      >
-    </li>
-    {% endif %}
-  </ul>
-</nav>
-{% endif %}
+    <!-- End of Pagination -->
+  </div>
+</div>
+
+
 <div class="shipment-actions mt-4">
   {% if not shipment.confirmed %}
-  <a href="{% url 'shipment_add_item' shipment.id %}" class="btn btn-primary"
-    >➕ Add Item</a
-  >
-  <a href="{% url 'shipment_edit' shipment.id %}" class="btn btn-primary"
-    >Update Shipment</a
-  >
-  {% endif %} {%if request.user.is_superuser or request.user.role == "manager"%}
-  {% if not shipment.confirmed %}
-  <form
-    method="post"
-    action="{% url 'shipment_confirm' shipment.id %}"
-    class="d-inline"
-  >
-    {% csrf_token %}
-    <button type="submit" class="btn btn-success">✅ Confirm Shipment</button>
-  </form>
-  {% endif %} {% endif %}
-
-    <a href="{% url 'shipment_list' %}" class="btn btn-secondary">Back to shipments list</a>
+    <a href="{% url 'shipment_edit' shipment.id %}" class="btn btn-view-all fw-semibold me-2" style="background-color: #4339f2; color:white">
+      Update Shipment
+    </a>
+  
+    {% if request.user.is_superuser or request.user.role == "manager" %}
+      <form method="post" action="{% url 'shipment_confirm' shipment.id %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-view-all me-2 text-decoration-none">Confirm Shipment</button>
+      </form>
+    {% endif %}
+  {% endif %}
 </div>
+
 {% endblock content %}
