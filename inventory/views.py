@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
+import sweetify
 from .models import Product
 from django.contrib.auth.decorators import login_required
 from .forms import ProductForm
@@ -13,7 +14,7 @@ def product_list(request):
     if query:
         products_queryset = Product.objects.filter(name__icontains=query)
     else:
-        products_queryset = Product.objects.all()
+        products_queryset = Product.objects.order_by('-created_at')
     
     # Add pagination
     paginator = Paginator(products_queryset, 5) 
@@ -62,7 +63,16 @@ def product_delete(request, pk):
     
     if request.method == 'POST':
         if related_shipments or related_orders:
-            messages.add_message(request, messages.ERROR, f'This product is related to a shipment or an order. Delete them first to be able to delete this product.')
+            sweetify.error(
+                request,
+                title="Cannot delete product",
+                icon="error",
+                text="This product is related to a shipment or an order. Delete them first to be able to delete this product.",
+                timer=5000,
+                position="top-end",
+                toast=True,
+                showConfirmButton=False,
+            )
             return redirect('inventory:product_list')
         
         product.delete()
