@@ -78,14 +78,27 @@ class OrderCreateItemView(LoginRequiredMixin, View):
     
     def post(self, request, pk):
         order = get_object_or_404(Order, id=pk, status="PENDING")
+
         form = OrderItemForm(request.POST)
         if form.is_valid():
+            if form.cleaned_data["quantity"] > form.cleaned_data["product"].quantity:
+                sweetify.error(
+                    request,
+                    title="Cannot add item",
+                    icon="error",
+                    text="Quantity exceeds available stock",
+                    timer=2000,
+                    position="top-end",
+                    toast=True,
+                    showConfirmButton=False,
+                )
+                return render(request, "orders/order_item_form.html", {"form":form, "order":order})
             item = form.save(commit=False)
             item.created_by_user = request.user
             item.order = order
             item.save()
             return redirect("orders")
-        return render(request, "order/order_item_form.html", {"form":form, "order":order})
+        return render(request, "orders/order_item_form.html", {"form":form, "order":order})
     
     def get_context_data(self, **kwargs):
         return super().get_context_data(**kwargs)
