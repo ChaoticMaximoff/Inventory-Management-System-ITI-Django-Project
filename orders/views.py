@@ -134,7 +134,7 @@ class OrderCreateItemView(LoginRequiredMixin, View):
             item.created_by_user = request.user
             item.order = order
             item.save()
-            return redirect("orders")
+            return redirect("order_items", pk=order.id)
         return render(
             request, "orders/order_item_form.html", {"form": form, "order": order}
         )
