@@ -62,55 +62,56 @@
             <td>{{ item.product }}</td>
             <td>{{ item.quantity }}</td>
             <td>{{ item.created_by_user }}</td>
-           
-              {% if order_items.status == 'PENDING' %}
-              <td class="action-icons">
-              <i class="fas fa-edit text-success"></i>
-              <i class="fas fa-trash text-danger"></i>
-              </td>
-              {% endif%}
-            
+            <td class="action-icons">
+              <button type="button" class="btn" data-bs-toggle="modal" data-bs-toggle="modal" data-bs-target="#deleteorderitem-{{item.id}}">
+                <i class="fas fa-trash text-danger"></i>
+              </button>
+              <!-- Confirm Delete Modal -->
+             <div class="modal fade" id="deleteorderitem-{{item.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm Delete</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    Are you sure you want to delete this item?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="{% url 'order-item-delete' item.id %}" method="post">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">Confirm</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </td>
           </tr>
           {% empty %}
                 
                     <td colspan="10" class="p-4 text-center">No orders found.</td>
                 
             {% endfor %}
-           
-          
+            <div class="shipment-actions mt-4">
+              {% if order_items.status == 'PENDING' %}
+                  <a href="{% url 'order_add_item' order_items.id %}"
+                     class="btn btn-primary">➕ Add Item</a>
+                  <!-- <a href="#"
+                     class="btn btn-primary">Update Shipment</a> -->
+              {% endif %}
+              {% if request.user.is_superuser or request.user.role == "manager" %}
+                  {%if order_items.status == 'PENDING'%}
+                      <form method="post"
+                            action="{% url 'order-confirm' order_items.id %}"
+                            class="d-inline">
+                          {% csrf_token %}
+                          <p> {{order_items.status}}</p>
+                          <button type="submit" class="btn btn-success">✅ Confirm Shipment</button>
+                      </form>
+                  {% endif %}
+              {% endif %}
+          </div>
             
-            {% if is_paginated %}
-            <nav class="pagin">
-              <span>{{page_obj.object_list.count }} items are shown</span>
-              <span class="float-end">
-              <ul class="pagination">
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                  <a  href="?page=1">first</a>
-                </li>
-                <li class="page-item">
-                  <a href="?page={{ page_obj.previous_page_number }}" 
-                    >⬅</a
-                  >
-                </li>
-                {% endif %}
-                <li class="page-item ">
-                  <span  style="background-color: #4339f2; color:white; border-radius: 4px; padding-left: 10px; padding-right: 10px;"
-                    >{{ page_obj.number }}</span
-                  >
-                </li>
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                  <a href="?page={{ page_obj.next_page_number }}"
-                    >➡</a
-                  >
-                </li>
-                <li class="page-item">
-                  <a href="?page={{ paginator.num_pages }}">last</a>
-                </li>
-                {% endif %}
-              </ul>
-            </nav>
-          </span>
-            {% endif %}
 {% endblock %}

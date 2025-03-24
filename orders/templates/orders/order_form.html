@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <h1>{{mode|title}} Order</h1>
+    <form method="post">
 
     <h1>Create Order</h1>
     <div class="my-4">
@@ -8,6 +10,8 @@
           <div class="d-flex justify-content-between gap-5 align-items-center">
     <form method="post" class="align-middle mt-3 p-4">
         {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{{mode|title}} Order</button>
         <label class="form-label">Supermarket: </label>
         {{ form.supermarket }}
 
