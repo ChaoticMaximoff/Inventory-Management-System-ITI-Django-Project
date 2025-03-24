@@ -25,7 +25,10 @@ class ShipmentItemForm(forms.ModelForm):
     class Meta:
         model = ShipmentItem
         fields = ["product", "quantity"]
-
+        widgets = {
+            "product": forms.Select(attrs={"class": "form-select w-25 form-control"}),
+            "quantity": forms.NumberInput(attrs={"class": "form-control"}),
+        }
     def clean_quantity(self):
         quantity = self.cleaned_data.get("quantity")
         if quantity <= 5:
