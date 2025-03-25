@@ -8,7 +8,7 @@ class LoginForm(forms.Form):
             attrs={
                 'class': 'form-control rounded-pill py-3 px-5',
                 'id': 'email',
-                'placeholder': 'User Name or Email',
+                'placeholder': 'Enter your Email',
                 'required': True
             }
         )

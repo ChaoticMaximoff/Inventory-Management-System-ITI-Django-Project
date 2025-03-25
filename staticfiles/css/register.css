@@ -45,7 +45,7 @@ img {
   border-radius: 20px 0px 0px 20px !important;
 }
 .main-wrapper {
-  width: 80%;
+  width: 80% !important;
   margin: 5% auto;
   border-radius: 20px !important;
   min-height: 600px;
