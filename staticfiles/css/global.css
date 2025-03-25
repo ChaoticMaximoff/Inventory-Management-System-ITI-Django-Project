@@ -39,7 +39,19 @@ body {
   line-height: 1.6;
 }
 
-/* Sidebar Styling */
+.burger-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-primary);
+  padding: 10px;
+  cursor: pointer;
+}
+
+.burger-btn:focus {
+  outline: none;
+}
+/* Sidebar Adjustments */
 .sidebar {
   width: 300px;
   height: 100vh;
@@ -49,6 +61,7 @@ body {
   background: var(--sidebar-bg);
   color: white;
   padding-top: 20px;
+  transition: transform 0.3s ease; /* Smooth transition for sliding */
 }
 .header {
   margin-left: 300px;
@@ -79,20 +92,40 @@ body {
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
+    width: 250px; /* Slightly narrower for mobile */
+    transform: translateX(-100%); /* Hide sidebar off-screen */
+    height: 100vh;
+    position: fixed;
+    z-index: 1000; /* Ensure sidebar is above other content */
+  }
+
+  .sidebar.active {
+    transform: translateX(0); /* Show sidebar when active */
   }
 
   .main-content {
     margin-left: 0;
     padding: 15px;
   }
+
   .header {
-    margin-left: 0px;
+    margin-left: 0;
   }
 }
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+}
 
+.overlay.active {
+  display: block;
+}
 .navbar-custom {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -200,8 +233,8 @@ a:hover {
   padding: 15px;
 }
 
-.pagin ul li a, .pagin ul li span{
-
+.pagin ul li a,
+.pagin ul li span {
   color: rgb(55, 55, 55);
   margin: 3px;
   border-radius: 4px;
@@ -210,16 +243,16 @@ a:hover {
   border: 1px solid rgba(162, 161, 161, 0.834);
   vertical-align: middle;
 }
-.pagin ul li a:hover{
+.pagin ul li a:hover {
   color: white;
   background-color: #4339f2;
 }
-.button1{
+.button1 {
   background-color: #4339f2 !important;
   color: white !important;
 }
 
-.button-2nd{
+.button-2nd {
   color: #4339f2;
 }
 .action-icons i {
@@ -243,8 +276,8 @@ a:hover {
   padding: 15px;
 }
 
-.pagin ul li a, .pagin ul li span{
-
+.pagin ul li a,
+.pagin ul li span {
   color: rgb(55, 55, 55);
   margin: 3px;
   border-radius: 4px;
@@ -253,15 +286,15 @@ a:hover {
   border: 1px solid rgba(162, 161, 161, 0.834);
   vertical-align: middle;
 }
-.pagin ul li a:hover{
+.pagin ul li a:hover {
   color: white;
   background-color: #4339f2;
 }
-.button1{
+.button1 {
   background-color: #4339f2 !important;
   color: white !important;
 }
 
-.button-2nd{
+.button-2nd {
   color: #4339f2;
 }
