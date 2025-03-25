@@ -33,7 +33,7 @@ DEBUG = os.getenv("DEBUG", True) == 'True'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'justice-league-inventory-management-system.up.railway.app']
 
-CSRF_TRUSTED_ORIGINS = ['https://justice-league-inventory-management-system.up.railway.app/']
+CSRF_TRUSTED_ORIGINS = ['https://justice-league-inventory-management-system.up.railway.app']
 
 
 # Application definition
