@@ -1,0 +1,9 @@
+{% extends "base.html" %} {% block title %}Index{% endblock %} 
+{% block content    %}
+<h1>hello from index</h1>
+
+{% if user.is_authenticated %}
+<h2>hello {{ user.username }} !</h2>
+{% endif %}
+
+{%endblock content%}

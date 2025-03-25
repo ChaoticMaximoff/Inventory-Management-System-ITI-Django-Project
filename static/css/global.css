@@ -1,0 +1,267 @@
+/* Root Variables for Consistent Theming */
+:root {
+  --primary-color: #584bdd;
+  --secondary-color: #9747ff;
+  --sidebar-bg: #040128;
+  --sidebar-text: #ecf0f1;
+  --card-bg: #ffffff;
+  --text-primary: #3b3b3b;
+  --text-muted: #6c757d;
+  --border-color: #dee2e6;
+  --hover-bg: #f8f9fa;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --font-family: "Montserrat", "Roboto", sans-serif;
+}
+
+/* Reset and Base Styles */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+article,
+aside,
+footer,
+header,
+main,
+nav,
+section {
+  display: block;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background-color: #f1f3f5;
+  line-height: 1.6;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 300px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: var(--sidebar-bg);
+  color: white;
+  padding-top: 20px;
+}
+.header {
+  margin-left: 300px;
+}
+
+.sidebar .nav-link {
+  color: var(--sidebar-text);
+  padding: 10px 15px;
+  border-radius: 10px;
+  width: 80%;
+  margin: 20px;
+
+  transition: background-color 0.3s ease;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Main Content Area */
+.main-content {
+  margin-left: 300px;
+  padding: 30px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 15px;
+  }
+  .header {
+    margin-left: 0px;
+  }
+}
+
+.navbar-custom {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+}
+.navbar-brand {
+  font-weight: bold;
+  color: #000;
+}
+.navbar-brand:hover {
+  color: var(--secondary-color);
+}
+.input-group {
+  border-radius: 20px;
+}
+.input-group-text {
+  border: none;
+  background-color: #f3f3f3;
+  border-color: #ced4da;
+  color: #8c8c8c;
+  border-radius: 10px;
+}
+.form-control {
+  border-left: none;
+  border-color: #ced4da;
+  border: none;
+  background-color: #f3f3f3;
+  border-radius: 10px;
+}
+.input-group .form-control:focus {
+  border-color: #ced4da;
+  box-shadow: none;
+  background-color: #f3f3f3;
+}
+.form-control::placeholder {
+  color: #8c8c8c;
+  font-size: 17px;
+}
+.dropdown-toggle::after {
+  display: none;
+}
+.dropdown {
+  position: relative;
+}
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0;
+}
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+.dropdown-toggle {
+  text-decoration: none;
+}
+.profile:hover {
+  background-color: #f3f3f3 !important;
+}
+.bell-btn:hover {
+  background-color: #f3f3f3 !important;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  background-color: transparent;
+}
+
+a:hover {
+  text-decoration: none;
+}
+.action-icons i {
+  cursor: pointer;
+  margin: 0 5px;
+}
+.btn-view-all {
+  border: 1px solid #4339f2;
+  color: #4339f2;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.action-icons i {
+  cursor: pointer;
+  margin: 0 5px;
+}
+.orders-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+.pagin ul li a, .pagin ul li span{
+
+  color: rgb(55, 55, 55);
+  margin: 3px;
+  border-radius: 4px;
+  padding: 7px;
+  text-decoration: none;
+  border: 1px solid rgba(162, 161, 161, 0.834);
+  vertical-align: middle;
+}
+.pagin ul li a:hover{
+  color: white;
+  background-color: #4339f2;
+}
+.button1{
+  background-color: #4339f2 !important;
+  color: white !important;
+}
+
+.button-2nd{
+  color: #4339f2;
+}
+.action-icons i {
+  cursor: pointer;
+  margin: 0 5px;
+}
+.btn-view-all {
+  border: 1px solid #4339f2;
+  color: #4339f2;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.action-icons i {
+  cursor: pointer;
+  margin: 0 5px;
+}
+.orders-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+.pagin ul li a, .pagin ul li span{
+
+  color: rgb(55, 55, 55);
+  margin: 3px;
+  border-radius: 4px;
+  padding: 7px;
+  text-decoration: none;
+  border: 1px solid rgba(162, 161, 161, 0.834);
+  vertical-align: middle;
+}
+.pagin ul li a:hover{
+  color: white;
+  background-color: #4339f2;
+}
+.button1{
+  background-color: #4339f2 !important;
+  color: white !important;
+}
+
+.button-2nd{
+  color: #4339f2;
+}

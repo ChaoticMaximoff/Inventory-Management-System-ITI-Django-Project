@@ -1,0 +1,119 @@
+{% extends "base.html" %} 
+
+{% block extra_head %}
+  <title>Supermarkets List</title>
+{% endblock %}
+
+{% block content %}
+<style>
+  .action-icons i {
+    cursor: pointer;
+    margin: 0 5px;
+  }
+
+  .btn-view-all {
+    border: 1px solid #4339f2;
+    color: #4339f2;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .orders-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+  }
+</style>
+
+
+<h5 class="fw-bold">Supermarkets List</h5>
+<div class="my-4">
+  <div class="card orders-card" style="overflow: auto">
+    <div class="d-flex justify-content-end gap-5 align-items-center">
+
+      <div>
+        <a href="{%url 'supermarket_create'%}"><button class="btn btn-view-all fw-semibold me-2"
+            style="border:1px solid #4339f2; color:#4339f2"> Add a supermarket</button></a>
+      </div>
+    </div>
+    <table class="table align-middle mt-3">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Location</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      {% for supermarket in supermarkets %}
+      <tbody>
+        <tr>
+          <td>{{ forloop.counter }}</td>
+            <td>
+              {{ supermarket.name }}
+          </td>
+          <td>{{ supermarket.location|default:"N/A" }}</td>
+          <td>
+            <a href="{% url 'supermarket_detail' supermarket.pk %}"
+            >
+            <i class="fas fa-eye text-primary"></i></a>
+           
+
+            <a
+              href="{% url 'supermarket_edit' supermarket.pk %}"
+              class="btn btn-sm"
+            >
+              <i class="fas fa-edit text-success"></i>
+            </a>
+            <a
+              href="{% url 'supermarket_delete' supermarket.pk %}"
+              class="btn btn-sm"
+            >
+            <i class="fas fa-trash text-danger"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="p-4 text-center">No orders found.</td>
+        </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+
+    {% if is_paginated %}
+    <nav class="pagin">
+      <span>{{page_obj.object_list.count }} items are shown</span>
+      <span class="float-end">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a  href="?page=1">first</a>
+        </li>
+        <li class="page-item">
+          <a href="?page={{ page_obj.previous_page_number }}" 
+            >⬅</a
+          >
+        </li>
+        {% endif %}
+        <li class="page-item ">
+          <span  style="background-color: #4339f2; color:white; border-radius: 4px; padding-left: 10px; padding-right: 10px;"
+            >{{ page_obj.number }}</span
+          >
+        </li>
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a href="?page={{ page_obj.next_page_number }}"
+            >➡</a
+          >
+        </li>
+        <li class="page-item">
+          <a href="?page={{ paginator.num_pages }}">last</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </span>
+    {% endif %}
+{% endblock %}

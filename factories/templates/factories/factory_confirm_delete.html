@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body text-center">
+      <h2 class="mb-3 text-danger">Confirm Deletion</h2>
+      <p>
+        Are you sure you want to delete <strong>{{ factory.name }}</strong>?
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn m-2" style="background-color: #4339f2; color:white">Confirm</button>
+        <a href="{% url 'factory_list' %}" class="btn m-2" style="color:#4339f2; border:1px solid #4339f2">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
