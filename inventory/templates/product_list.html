@@ -11,8 +11,8 @@
   <form
     method="get"
     action=""
-    class="d-flex flex-column align-items-center mb-4">
-    <div class="input-group mb-3" style="max-width: 400px">
+    class="d-flex justify-content-between align-items-center mb-4">
+    <div class="input-group" style="max-width: 400px">
       <input
         type="text"
         name="q"
@@ -26,6 +26,12 @@
         Search
       </button>
     </div>
+    <a
+      href="{% url 'inventory:product_create' %}"
+      class="btn delete-button"
+      style="background-color: var(--primary-color); color: white"
+      >Add New Product</a
+    >
   </form>
 
   <ul class="list-group">
@@ -152,15 +158,6 @@
         {% endif %}
       </ul>
     </nav>
-  </div>
-
-  <div class="text-center mt-4">
-    <a
-      href="{% url 'inventory:product_create' %}"
-      class="btn delete-button"
-      style="background-color: var(--primary-color); color: white"
-      >Add New Product</a
-    >
   </div>
 </div>
 {% endblock %}
