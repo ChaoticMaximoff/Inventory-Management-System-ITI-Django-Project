@@ -44,9 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    'django.contrib.staticfiles',
-    'cloudinary_storage',
-    'cloudinary',
+    "django.contrib.staticfiles",
     "admin_honeypot",
     "accounts.apps.AccountsConfig",
     "inventory",
@@ -141,18 +139,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-MEDIA_URL = '/media/'  # or any prefix you choose
-
-if DEBUG == False:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-else:
-    MEDIA_ROOT = BASE_DIR / "media"
-
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv("CLOUD_NAME"),
-    'API_KEY': os.getenv("CLOUD_API_KEY"),
-    'API_SECRET': os.getenv("CLOUD_API_SECRET"),
-}
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -179,3 +167,10 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 SWEETIFY_SWEETALERT_LIBRARY = "sweetalert2"
+
+if not DEBUG:  # Ensure media files work in production
+    import mimetypes
+    mimetypes.add_type("image/png", ".png", True)
+    mimetypes.add_type("image/jpeg", ".jpg", True)
+    mimetypes.add_type("image/jpeg", ".jpeg", True)
+    mimetypes.add_type("image/gif", ".gif", True)
